@@ -49,6 +49,7 @@ void setup()
 
 void loop()
 {
+  int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
   int packetSize = Udp.parsePacket();
   if (packetSize > 0)
   {
@@ -60,12 +61,10 @@ void loop()
 
     Serial.print(F("Recieved: "));
 
-    if (packetBuffer[0] == )
+    if (packetBuffer[0] == temp)
     {
-      
-
       Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-      packetBuffer[0] = ;
+      packetBuffer[0] = temp;
       Udp.write(packetBuffer, PACKET_BUFFER_LENGTH);
       Udp.endPacket();
     }
