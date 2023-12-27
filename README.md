@@ -13,7 +13,7 @@ lista będzie na bierząco uzupełniana
 - [ ] test komunikacji tuple space <-> 3x worker
 - [ ] opracowanie binarnego protokołu warstwy aplikacyjnej APL
 - [ ] implementacja APL
-- [ ] implementacja serializacji (zamiana wartości przy przesyłąniu i obieraniu)
+- [ ] implementacja serializacji (zamiana wartości przy przesyłaniu i obieraniu)
 
 ## 🧭 Nawigacja
 
