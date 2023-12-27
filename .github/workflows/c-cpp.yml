@@ -14,13 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: move to prime_check module
-      run: cd ${{github.workspace}}/worker/prime_check
-
-    - name: check rel dir
-      run: ls
-
     - name: build unit-test
+      working-directory: ${{github.workspace}}/worker/prime_check
       run: gcc .\unit_test.cpp .\prime_check.cpp -o unit_test.exe -Incruses
     
     - name: run unit-test
