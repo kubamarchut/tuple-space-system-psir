@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-prime-check:
 
     runs-on: ubuntu-latest
 
@@ -18,7 +18,7 @@ jobs:
       working-directory: ${{github.workspace}}/worker/prime_check
       run: gcc ./unit_test.cpp ./prime_check.cpp -o unit_test.exe -Incruses
   
-  test:
+  test-prime-check:
   
     runs-on: ubuntu-latest
 

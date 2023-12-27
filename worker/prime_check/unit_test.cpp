@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "prime_check.h"
 
 void test(int testSubject, int expectedValue){
@@ -10,6 +11,7 @@ void test(int testSubject, int expectedValue){
     }
     else{
         printf("unsuccessful returned value %d expected %d\n", givenValue, expectedValue);
+        exit(-1);
     }
 }
 
@@ -28,7 +30,7 @@ int main(){
     test(10, 0);
     test(16, 0);
     test(100, 0);
-    test(2138, 0);
+    test(2138, 1);
 
     return 0;
 }
