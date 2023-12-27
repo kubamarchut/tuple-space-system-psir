@@ -33,7 +33,7 @@ jobs:
       working-directory: ${{github.workspace}}/worker/lib/PrimeCheck
       run: ./unit_test.exe
 
-build-worker:
+  build-worker:
 
     runs-on: ubuntu-latest
 
