@@ -17,4 +17,4 @@ To repozytorium przechowuje materiały zgromadzone przy pracy na projektem "Tupl
 
 ## 📃 Dokumentacja
 
-[Dokumentacja - overleaf](https://www.overleaf.com/4775459652bvxrvkvfkbty#8efc52)
+[Dokumentacja - overleaf](https://www.overleaf.com/read/jdprzxtqqcqg#d17f5a)
