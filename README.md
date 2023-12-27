@@ -2,6 +2,19 @@
 
 To repozytorium przechowuje materiały zgromadzone przy pracy na projektem "Tuple space middleware for distributed computing" w ramach przedmiotu PSIR.
 
+## 📋 Rzeczy do zrobienia
+lista będzie na bierząco uzupełniana
+
+- [x] kod sprawdzający czy liczba jest pierwsza
+- [ ] podstawowa struktura tuple space
+- [ ] podstawowa struktura managera
+- [ ] test komunikacji tuple space <-> manager
+- [ ] postawowa struktura tuple space
+- [ ] test komunikacji tuple space <-> 3x worker
+- [ ] opracowanie binarnego protokołu warstwy aplikacyjnej APL
+- [ ] implementacja APL
+- [ ] implementacja serializacji (zamiana wartości przy przesyłąniu i obieraniu)
+
 ## 🧭 Nawigacja
 
 - tuple-space - oprogramowanie odpowiedzialne za obsulgę przestrzeni krotek
