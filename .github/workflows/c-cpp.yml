@@ -16,9 +16,7 @@ jobs:
 
     - name: build unit-test
       working-directory: ${{github.workspace}}/worker/prime_check
-      run: |
-        pwd
-        gcc .\unit_test.cpp .\prime_check.cpp -o unit_test.exe -Incruses
+      run: gcc ./unit_test.cpp ./prime_check.cpp -o unit_test.exe -Incruses
 
     - name: run unit-test
       run: ./unit_test.exe
