@@ -13,7 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
+    
+    - name: move to prime_check module
+      run: cd ${{github.workspace}}/worker/prime_check
+
+    - name: build unit-test
+      run: gcc .\unit_test.cpp .\prime_check.cpp -o unit_test.exe -Incruses
+    
+    - name: run unit-test
+      run: ./unit_test.exe
