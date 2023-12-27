@@ -17,6 +17,18 @@ jobs:
     - name: build unit-test
       working-directory: ${{github.workspace}}/worker/prime_check
       run: gcc ./unit_test.cpp ./prime_check.cpp -o unit_test.exe -Incruses
+  
+  test:
+  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build unit-test
+      working-directory: ${{github.workspace}}/worker/prime_check
+      run: gcc ./unit_test.cpp ./prime_check.cpp -o unit_test.exe -Incruses
 
     - name: run unit-test
+      working-directory: ${{github.workspace}}/worker/prime_check
       run: ./unit_test.exe
