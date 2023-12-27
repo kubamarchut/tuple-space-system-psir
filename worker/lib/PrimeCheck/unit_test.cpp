@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "PrimeCheck.h"
+#include "src/PrimeCheck.h"
 
 void test(int testSubject, int expectedValue){
     int givenValue = isPrime(testSubject);
