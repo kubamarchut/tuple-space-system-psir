@@ -7,6 +7,7 @@ To repozytorium przechowuje materiały zgromadzone przy pracy na projektem "Tupl
 - tuple-space - oprogramowanie odpowiedzialne za obsulgę przestrzeni krotek
 - worker - program wykonujący przydzielone zadania umieszczone w przestrzeni krotek, uruchamiany na emulatorze Arduino
 - manager - program tworzący zadania dla "workerów", umieszcza je w przestzreni krotek
+- common - miejsce na przechowywanie współdzielonego kodu między różnymi modułami
 
 ## 🖐️ Autorzy
 
