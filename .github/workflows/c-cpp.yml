@@ -16,7 +16,7 @@ jobs:
 
     - name: build unit-test
       working-directory: ${{github.workspace}}/worker/lib/PrimeCheck
-      run: gcc ./unit_test.cpp ./src/prime_check.cpp -o unit_test.exe -Incruses
+      run: gcc ./unit_test.cpp ./src/PrimeCheck.cpp -o unit_test.exe -Incruses
   
   test-prime-check:
   
@@ -27,7 +27,7 @@ jobs:
 
     - name: build unit-test
       working-directory: ${{github.workspace}}/worker/lib/PrimeCheck
-      run: gcc ./unit_test.cpp ./src/prime_check.cpp -o unit_test.exe -Incruses
+      run: gcc ./unit_test.cpp ./src/PrimeCheck.cpp -o unit_test.exe -Incruses
 
     - name: run unit-test
       working-directory: ${{github.workspace}}/worker/lib/PrimeCheck
