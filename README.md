@@ -9,7 +9,7 @@ lista będzie na bierząco uzupełniana
 - [ ] podstawowa struktura tuple space
 - [ ] podstawowa struktura managera
 - [ ] test komunikacji tuple space <-> manager
-- [ ] postawowa struktura tuple space
+- [ ] postawowa struktura worker
 - [ ] test komunikacji tuple space <-> 3x worker
 - [ ] opracowanie binarnego protokołu warstwy aplikacyjnej APL
 - [ ] implementacja APL
