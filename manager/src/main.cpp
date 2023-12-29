@@ -2,7 +2,6 @@
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
-#include <PrimeCheck.h>
 
 #define UDP_TUPLE_SPACE_PORT 2001
 #define MAX_BUFFER 32
@@ -20,7 +19,7 @@ ZsutEthernetUDP Udp;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print(F("Worker init... ["));
+  Serial.print(F("Manager init... ["));
   Serial.print(F(__FILE__));
   Serial.print(F(", "));
   Serial.print(F(__DATE__));
@@ -50,17 +49,9 @@ void setup()
 void loop()
 {
   int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
-  int MAX = 100;
-  for (int i = 2; i <= MAX; i++){
-    int prime = isPrime(i);
-    Serial.print(i, DEC);
-    if (prime == 1){
-      Serial.print(F(" is prime\n"));
-    }
-    else{
-      Serial.print(F(" is not prime\n"));
-    }
-    delay(100);
+  int MAX = 5000;
+  for (int i = 2; i <= MAX; i++;){
+
   }
   int packetSize = Udp.parsePacket();
   if (packetSize > 0)
