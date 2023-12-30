@@ -7,9 +7,9 @@ lista będzie na bierząco uzupełniana
 
 - [x] kod sprawdzający czy liczba jest pierwsza
 - [ ] podstawowa struktura tuple space
-- [ ] podstawowa struktura managera
+- [x] podstawowa struktura managera
 - [ ] test komunikacji tuple space <-> manager
-- [ ] postawowa struktura worker
+- [x] postawowa struktura worker
 - [ ] test komunikacji tuple space <-> 3x worker
 - [ ] opracowanie binarnego protokołu warstwy aplikacyjnej APL
 - [ ] implementacja APL
