@@ -18,18 +18,9 @@ typedef struct {
 } field_t; /* a new type corresponding to one field of a tuple*/
 
 /* API */
-/*these functions return TS_SUCCESS or TS_FAILURE */
-
-/*
-parameters : tuple name , other fields , no. of other fields*/
-
-int
-ts_out (char*, field_t *, int
-
-int
-ts_inp (char*, field_t *, int
-
-int
-ts_rdp (char*, field_t *, int
-
+/* these functions return TS_SUCCESS or TS_FAILURE */
+/* parameters : tuple name , other fields , no. of other fields */
+int ts_out (char*, field_t *, int);
+int ts_inp (char*, field_t *, int);
+int ts_rdp (char*, field_t *, int);
 #endif
