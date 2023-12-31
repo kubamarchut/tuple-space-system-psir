@@ -20,7 +20,13 @@ typedef struct {
 /* API */
 /* these functions return TS_SUCCESS or TS_FAILURE */
 /* parameters : tuple name , other fields , no. of other fields */
+
+// this function should adds a tuple with specified fields to the tuple space
 int ts_out (char*, field_t *, int);
+
+// this function should retrieve a tuple matching the specified fields from the tuple space and delete it
 int ts_inp (char*, field_t *, int);
+
+// this function should retrieve a tuple matching the specified fields from the tuple space and without deleting it
 int ts_rdp (char*, field_t *, int);
 #endif

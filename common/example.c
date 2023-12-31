@@ -8,7 +8,6 @@ int main(void)
     field_t my_template[1];
 
     /* make a tuple */
-
     my_tuple[0].is_actual = TS_YES;
     my_tuple[0].type = TS_INT;
     my_tuple[0].data.int_field = 128;
