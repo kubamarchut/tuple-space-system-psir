@@ -9,42 +9,43 @@
 
 typedef
 struct
-10.
+
 int
 is_actual ;;/* does the data member contains data */
-11.
+
 int
 type ;;/* what is the type of the data member
-12.
+
 union
-13.
+
 int
 int_field
-14.
+
 float
 float_field
-15.
+
 }
 data;
-16.
+
 }
-field_t ;;/* a new type corresponding to one field of a tuple
-17.
+field_t ;
+/* a new type corresponding to one field of a tuple*/
+
 /* API */
-18.
+
 /*
 these functions return TS_SUCCESS or TS_FAILURE */
-19.
+
 /*
 parameters : tuple name , other fields , no. of other fields*/
-20.
+
 int
 ts_out (char*, field_t *, int
-21.
+
 int
 ts_inp (char*, field_t *, int
-22.
+
 int
 ts_rdp (char*, field_t *, int
-23.
+
 #endif
