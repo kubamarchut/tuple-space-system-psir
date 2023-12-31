@@ -1,25 +1,12 @@
 #ifndef TUPLE_SPACE_H
-2.
 #define TUPLE_SPACE_ H
-3.
-#define TS_YES
-1
-4.
-#define TS_NO
-0
-5.
-#define TS_INT
-0
-6.
-#define TS_FLOAT
-1
-7.
-#define TS_SUCCESS
-1
-8.
-#define TS_FAILURE
-0
-9.
+#define TS_YES 1
+#define TS_NO 0
+#define TS_INT 0
+#define TS_FLOAT 1
+#define TS_SUCCESS 1
+#define TS_FAILURE 0
+
 typedef
 struct
 10.
@@ -49,7 +36,7 @@ field_t ;;/* a new type corresponding to one field of a tuple
 these functions return TS_SUCCESS or TS_FAILURE */
 19.
 /*
-parameters : tuple name , other fields , no. of other fields
+parameters : tuple name , other fields , no. of other fields*/
 20.
 int
 ts_out (char*, field_t *, int
