@@ -68,7 +68,7 @@ int receive_udp_packet(char *buffer, int length){
         exit(-1);
     }
     received_command[pos] = '\0';
-    return 0; // Placeholder, replace with actual logic
+    return pos; // Placeholder, replace with actual logic
 }
 
 void close_udp_socket()
