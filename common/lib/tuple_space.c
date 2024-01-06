@@ -27,7 +27,7 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
     flags[4] = fields[0].type;
     if (num_fields > 1){
         flags[5] = fields[1].is_actual;
-        flags[6] = fields[1].is_actual;
+        flags[6] = fields[1].type;
     }
 
     for (int i = 0; i < 8; i++)

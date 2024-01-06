@@ -28,7 +28,7 @@ int main(){
     fd_set readfds;
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = (1 * 10000);
+    tv.tv_usec = (1 * 5000);
     int sel;
     int max_sd = socket;
 
@@ -77,7 +77,7 @@ int main(){
                 printf("tuple name: %s\n", tuple_name);
                 
                 int bit_pos = 4;
-                field_t received_tuple[num_fields];
+                field_t received_tuple[num_fields+1];
                 for (int i = 0; i <= num_fields; i++)
                 {
                     received_tuple[i].is_actual = received_message[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
