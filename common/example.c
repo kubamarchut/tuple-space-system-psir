@@ -1,7 +1,14 @@
 #include "lib/tuple_space.h"
+#include "lib/udp_handler.h"
+
+#define IP_ADDR "127.0.0.1"
+#define PORT "5000"
 
 int main(void)
 {
+    //UDP init
+    int s = init_udp_socket(IP_ADDR, PORT);
+
     int nice_power;
     double temp, pi;
     field_t my_tuple[2];    /* an array of fields (name not included) */
@@ -17,7 +24,7 @@ int main(void)
 
     /* add a tuple to the tuple space */
     ts_out("nice_constants", my_tuple, 2);      /* ("nice_constants",128,3.14) */
-
+    
     /* make a template */
     my_template[0].is_actual = TS_NO;
     my_template[0].type = TS_FLOAT;          /* need to specify the type */

@@ -8,12 +8,17 @@
 #define TS_SUCCESS  1
 #define TS_FAILURE  0
 
+#define TS_CMD_OUT  0
+#define TS_CMD_IN   1
+#define TS_CMD_RD   2
+
 typedef struct {
     int is_actual;  /* does the data member contains data */
     int type;       /* what is the type of the data member */
     union {
         int int_field;
         float float_field;
+        char* string_field;
     } data;
 } field_t;          /* a new type corresponding to one field of a tuple*/
 
