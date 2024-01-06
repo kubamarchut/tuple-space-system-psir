@@ -10,6 +10,7 @@
 #include <netdb.h>
 
 int udp_socket = -1; // Definition of the UDP socket
+int server = 0;
 struct addrinfo *r = NULL;
 
 int init_udp_socket(char *ip_address, char *port){
@@ -39,6 +40,7 @@ int init_udp_socket(char *ip_address, char *port){
     printf(" - created new socket successfully\n");
 
     if (ip_address == NULL){
+        server = 1;
         if (bind(udp_socket, r->ai_addr, r->ai_addrlen) != 0)
         {
             printError(__LINE__, __FILE__, strerror(errno));

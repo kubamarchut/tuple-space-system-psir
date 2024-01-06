@@ -2,6 +2,7 @@
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
+#include <tuple_space.h>
 
 #define UDP_TUPLE_SPACE_PORT 2001
 #define MAX_BUFFER 32
