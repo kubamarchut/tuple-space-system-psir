@@ -3,8 +3,8 @@
 #include <string.h>
 
 
-int intToBytes(int num, int index){
-    int pos = (sizeof(int) - 1) * 8;
+int intToBytes(uint32_t num, int index){
+    int pos = (sizeof(uint32_t) - 1) * 8;
     pos -= index * 8;
 
     return (num >> pos) & 0xFF;
@@ -25,13 +25,10 @@ int bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, un
 }
 
 int floatToBytes(float number, int index){
-    unsigned int* ptr = (unsigned int*)&number;
-    unsigned int num = *ptr;
+    unsigned char* floatBytes = (unsigned char*)&number;
 
-    int pos = (sizeof(int) - 1) * 8;
-    pos -= index * 8;
-
-    return (num >> pos) & 0xff;
+    printf("%d \n", sizeof(float) - index - 1);
+    return floatBytes[sizeof(float) - index - 1];
 }
 
 float bytesToFloat(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4) {
@@ -85,15 +82,13 @@ int serializePacket(char* packet, int command, char* tuple_name, field_t* fields
     {
         if(fields[i].is_actual == TS_YES){
             if (fields[i].type == TS_INT){
-                for (int j = 0; j<sizeof(int); j++){
+                for (int j = 0; j<sizeof(uint32_t); j++){
                     packet[total_packet_size++] = intToBytes(fields[i].data.int_field, j);
-                    //printf("%02x ", intToBytes(htonl(fields[0].data.int_field), i));
                 }
             }
             else if (fields[i].type == TS_FLOAT){
-                for (int j = 0; j<sizeof(int); j++){
+                for (int j = 0; j<sizeof(float); j++){
                     packet[total_packet_size++] = floatToBytes(fields[i].data.float_field, j);
-                    //printf("%02x ", floatToBytes(htonl(fields[1].data.float_field), i));
                 }
             }
         }
@@ -110,4 +105,62 @@ void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tupl
             printf("| ");
     }
     printf("\n");
+}
+/* Implementation of ts_out function */
+int ts_out(char* tuple_name, field_t* fields, int num_fields) {
+    unsigned char packet[1024];
+    memset(packet, 0, sizeof(packet));
+
+    int total_packet_size = serializePacket(packet, TS_CMD_OUT, tuple_name, fields, num_fields);
+
+    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    
+    Udp.write(packet, total_packet_size);
+
+    return TS_SUCCESS;
+}
+
+/* Implementation of ts_inp function */
+int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
+    unsigned char packet[1024];
+    memset(packet, 0, sizeof(packet));
+
+    int total_packet_size = serializePacket(packet, TS_CMD_IN, tuple_name, fields, num_fields);
+
+    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    
+    unsigned char rec_packet[1024];
+    memset(rec_packet, 0, sizeof(rec_packet));
+
+    //send_udp_packet(rec_packet, total_packet_size);
+
+    //int total_packet_size_rec = receive_udp_packet(packet, 1024);
+    
+    //displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
+
+
+    return TS_SUCCESS;
+}
+
+/* Implementation of ts_rdp function */
+int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
+    unsigned char packet[1024];
+    memset(packet, 0, sizeof(packet));
+
+    int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_name, fields, num_fields);
+
+    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    
+    //send_udp_packet(packet, total_packet_size);
+
+    unsigned char rec_packet[1024];
+    memset(rec_packet, 0, sizeof(rec_packet));
+
+    //int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
+    
+    //displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
+
+    
+
+    return TS_SUCCESS;
 }

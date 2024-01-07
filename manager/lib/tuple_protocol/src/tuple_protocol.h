@@ -1,5 +1,6 @@
 #ifndef TUPLE_PROTOCOL_H
 #define TUPLE_PROTOCOL_H
+#include <stdint.h>
 
 #define TS_YES      1
 #define TS_NO       0
@@ -22,6 +23,19 @@ typedef struct {
     } data;
 } field_t;          /* a new type corresponding to one field of a tuple*/
 
+/* API */
+/* these functions return TS_SUCCESS or TS_FAILURE */
+/* parameters : tuple name , other fields , no. of other fields */
+
+// this function should adds a tuple with specified fields to the tuple space
+int ts_out (char*, field_t *, int);
+
+// this function should retrieve a tuple matching the specified fields from the tuple space and delete it
+int ts_inp (char*, field_t *, int);
+
+// this function should retrieve a tuple matching the specified fields from the tuple space and without deleting it
+int ts_rdp (char*, field_t *, int);
+
 #define COMMAND_TYPE_MASK   0x03
 #define COMMAND_TYPE_POS    (sizeof(char) * 8 - 2)
 #define NUM_FIELDS_POS      (sizeof(char) * 8 - 3)
@@ -34,7 +48,7 @@ int serializePacket(char* packet, int command, char* tuple_name, field_t* fields
 
 void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tuple_name_len);
 
-int intToBytes(int number, int index);
+int intToBytes(uint32_t number, int index);
 int floatToBytes(float number, int index);
 
 int bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);

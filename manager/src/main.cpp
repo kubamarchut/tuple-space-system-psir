@@ -17,9 +17,13 @@ unsigned int localPort = UDP_TUPLE_SPACE_PORT;
 ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
 
 ZsutEthernetUDP Udp;
+FILE f_out;
+int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
 void setup()
 {
+  fdev_setup_stream(&f_out, sput, nullptr, _FDEV_SETUP_WRITE);
+  stdout = &f_out;
   Serial.begin(115200);
   Serial.print(F("Manager init... ["));
   Serial.print(F(__FILE__));
@@ -60,22 +64,16 @@ void loop()
     my_tuple[1].type = TS_FLOAT;
     my_tuple[1].data.float_field = 3.14;
 
-    int test = intToBytes(my_tuple[0].data.int_field, 1);
+    printf("size of int: %d\n", sizeof(float));
 
     unsigned char packet[1024];
     //int packet_len;
-    int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
-    for (int i = 0; i < packet_len; i++) {
-        Serial.print(packet[i]);
-
-        if (i == 0 || i == 1 || i == 14 + 1 || i == 14 + 1 + 4)
-            Serial.print("| ");
-    }
-    Serial.print("\n");
+   // int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
+    
     //displayProtocolBytes(packet, packet_len, 14);
 
     /* add a tuple to the tuple space */
-    //ts_out("nice_constants", my_tuple, 2);
+    ts_out("nice_constants", my_tuple, 2);
 
   int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
   int MAX = 5000;
