@@ -1,6 +1,7 @@
+#include "tuple_protocol.h"
 #include <stdio.h>
 #include <string.h>
-#include "tuple_space.h"
+
 
 int intToBytes(int num, int index){
     int pos = (sizeof(int) - 1) * 8;
@@ -105,7 +106,7 @@ void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tupl
     for (int i = 0; i < total_packet_size; i++) {
         printf("%02x ", packet[i]);
 
-        if (i == 0 | i == 1 || i == tuple_name_len + 1 || i == tuple_name_len + 1 + 4)
+        if (i == 0 || i == 1 || i == tuple_name_len + 1 || i == tuple_name_len + 1 + 4)
             printf("| ");
     }
     printf("\n");

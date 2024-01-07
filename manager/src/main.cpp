@@ -2,7 +2,6 @@
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
-#include <tuple_space.h>
 #include <tuple_protocol.h>
 
 #define UDP_TUPLE_SPACE_PORT 2001
@@ -61,9 +60,18 @@ void loop()
     my_tuple[1].type = TS_FLOAT;
     my_tuple[1].data.float_field = 3.14;
 
-    unsigned char packet[1024];
+    int test = intToBytes(my_tuple[0].data.int_field, 1);
 
-    //int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
+    unsigned char packet[1024];
+    //int packet_len;
+    int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
+    for (int i = 0; i < packet_len; i++) {
+        Serial.print(packet[i]);
+
+        if (i == 0 || i == 1 || i == 14 + 1 || i == 14 + 1 + 4)
+            Serial.print("| ");
+    }
+    Serial.print("\n");
     //displayProtocolBytes(packet, packet_len, 14);
 
     /* add a tuple to the tuple space */
