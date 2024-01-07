@@ -3,6 +3,7 @@
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
 #include <tuple_space.h>
+#include <tuple_protocol.h>
 
 #define UDP_TUPLE_SPACE_PORT 2001
 #define MAX_BUFFER 32
@@ -50,6 +51,24 @@ void setup()
 
 void loop()
 {
+    field_t my_tuple[2];    /* an array of fields (name not included) */
+
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_YES;
+    my_tuple[0].type = TS_INT;
+    my_tuple[0].data.int_field = 128;
+    my_tuple[1].is_actual = TS_YES;
+    my_tuple[1].type = TS_FLOAT;
+    my_tuple[1].data.float_field = 3.14;
+
+    unsigned char packet[1024];
+
+    //int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
+    //displayProtocolBytes(packet, packet_len, 14);
+
+    /* add a tuple to the tuple space */
+    //ts_out("nice_constants", my_tuple, 2);
+
   int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
   int MAX = 5000;
   for (int i = 2; i <= MAX; i++){
