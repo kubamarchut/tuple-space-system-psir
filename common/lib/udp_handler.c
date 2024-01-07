@@ -83,6 +83,11 @@ int receive_udp_packet(char *buffer, int length){
         printError(__LINE__, __FILE__, strerror(errno));
         exit(-1);
     }
+    else
+    {
+        printTimestamp();
+        printf(" - receiving a message\n");
+    }
     buffer[pos] = '\0';
     return pos; // Placeholder, replace with actual logic
 }

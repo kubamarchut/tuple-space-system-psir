@@ -24,7 +24,23 @@ typedef struct {
     int number_of_fields;
 } tuple_struct;
 
-tuple_struct tuples[MAX_TUPLES];
+int stats[4] = {0,0,0,0}; 
+const char *stats_labels[4] = {
+        "No. messages \"out\" type",
+        "No. messages \"in\" type",
+        "No. messages \"rd\" type",
+        "No. no matching tuple",
+    };
+
+tuple_struct tuples[MAX_TUPLES], empty_tuple;
+
+int removeTupleByID(int index, int tuples_count){
+    printf("\tremoving tuple nr %d\n", index);
+    tuples[index] = tuples[tuples_count - 1];
+    tuples[tuples_count - 1] = empty_tuple;
+
+    return tuples_count - 1;
+}
 
 int searchTupleByName(char* search_name) {
     for (int i = 0; i < MAX_TUPLES; ++i) {
@@ -77,10 +93,13 @@ void printTupleArray(tuple_struct tuples[], int size) {
         printf("\n");
     }
     printf("+--------------------+---------------+--------------------+--------------------+\n");
-}
-
-int getBit(unsigned char byte, int position) {
-    return (byte >> position) & 1;
+    printf("+------------------------------------+\n");
+    printf("|            Statistics              |\n");
+    printf("+----------------------------+-------+\n");
+    for (int i = 0; i < 4; ++i) {
+        printf("| %-*s | %*d |\n",26, stats_labels[i], 5, stats[i]);
+    }
+    printf("+----------------------------+-------+\n");
 }
 
 int main(){
@@ -123,7 +142,7 @@ int main(){
                 printf(" - new message from (%s:%d)\n", inet_ntoa(c.sin_addr),ntohs(c.sin_port));
 
                 int tuple_name_len = received_message[1];
-                //displayProtocolBytes(received_message, pos, tuple_name_len);
+                displayProtocolBytes(received_message, pos, tuple_name_len);
 
                 int command_type = received_message[0] >> COMMAND_TYPE_POS & COMMAND_TYPE_MASK;
                 int num_fields = getBit(received_message[0], NUM_FIELDS_POS);
@@ -139,52 +158,86 @@ int main(){
                 tuple_name[tuple_name_len] = '\0';
                 
                 //printf("tuple name: %s\n", tuple_name);
-                
-                int bit_pos = 4;
-                for (int i = 0; i <= num_fields; i++)
-                {
-                    tuples[tuples_count].fields[i].is_actual = received_message[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
-                    tuples[tuples_count].fields[i].type = received_message[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
-                }
-                int ptr_pos = tuple_name_len+2;
-                for (int i = 0; i <= num_fields; i++)
-                {
-                    if (tuples[0].fields[i].is_actual == TS_YES)
-                    {   
-                        if (tuples[0].fields[i].type == TS_INT){
-                            tuples[tuples_count].fields[i].data.int_field = bytesToInt(received_message[ptr_pos++], 
-                                                    received_message[ptr_pos++], 
-                                                    received_message[ptr_pos++], 
-                                                    received_message[ptr_pos++]);
-                            //printf("field 1: %d\n", tuples[tuples_count].fields[i].data.int_field);
-                        }
-                        else if (tuples[0].fields[i].type == TS_FLOAT){
-                            tuples[tuples_count].fields[i].data.float_field = bytesToFloat(received_message[ptr_pos++], 
+
+                if (command_type == TS_CMD_OUT){
+                    stats[TS_CMD_OUT]++;
+                    int bit_pos = 4;
+                    for (int i = 0; i <= num_fields; i++)
+                    {
+                        tuples[tuples_count].fields[i].is_actual = received_message[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+                        tuples[tuples_count].fields[i].type = received_message[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+                    }
+                    int ptr_pos = tuple_name_len+2;
+                    for (int i = 0; i <= num_fields; i++)
+                    {
+                        if (tuples[0].fields[i].is_actual == TS_YES)
+                        {   
+                            if (tuples[0].fields[i].type == TS_INT){
+                                tuples[tuples_count].fields[i].data.int_field = bytesToInt(received_message[ptr_pos++], 
                                                         received_message[ptr_pos++], 
                                                         received_message[ptr_pos++], 
                                                         received_message[ptr_pos++]);
-                            //printf("field 2: %f\n", tuples[tuples_count].fields[i].data.float_field);
+                                //printf("field 1: %d\n", tuples[tuples_count].fields[i].data.int_field);
+                            }
+                            else if (tuples[0].fields[i].type == TS_FLOAT){
+                                tuples[tuples_count].fields[i].data.float_field = bytesToFloat(received_message[ptr_pos++], 
+                                                            received_message[ptr_pos++], 
+                                                            received_message[ptr_pos++], 
+                                                            received_message[ptr_pos++]);
+                                //printf("field 2: %f\n", tuples[tuples_count].fields[i].data.float_field);
+                            }
                         }
                     }
+                    strcpy(tuples[tuples_count].tuple_name, tuple_name);
+                    tuples[tuples_count].number_of_fields = num_fields+1;
+
+                    printTupleArray(tuples, 10);
+                    tuples_count++;
                 }
-                strcpy(tuples[tuples_count].tuple_name, tuple_name);
-                tuples[tuples_count].number_of_fields = num_fields+1;
 
-                printTupleArray(tuples, 10);
-                tuples_count++;
-
-                if (command_type == TS_CMD_RD){
+                else if (command_type == TS_CMD_RD){
+                    stats[TS_CMD_RD]++;
                     int indexOfFound = searchTupleByName(tuple_name);
                     printf("Found tuple index: %d \n", indexOfFound);
 
+                    unsigned char packet[1024];
                     if (indexOfFound >= 0){
-                        unsigned char packet[1024];
                         int total_packet_size = serializePacket(packet, TS_CMD_RD, tuples[indexOfFound].tuple_name, 
                                tuples[indexOfFound].fields,
                                tuples[indexOfFound].number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
                     }
+                    else{
+                        field_t empty_tuple[1];
+                        int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
+                               empty_tuple,
+                               0);
+                        sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
+                    }
                 }
+                else if (command_type == TS_CMD_IN){
+                    stats[TS_CMD_IN]++;
+                    printf("into in\n");
+                    int indexOfFound = searchTupleByName(tuple_name);
+                    printf("Found tuple index: %d \n", indexOfFound);
+
+                    unsigned char packet[1024];
+                    if (indexOfFound >= 0){
+                        int total_packet_size = serializePacket(packet, TS_CMD_RD, tuples[indexOfFound].tuple_name, 
+                               tuples[indexOfFound].fields,
+                               tuples[indexOfFound].number_of_fields);
+                        sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
+                        tuples_count = removeTupleByID(indexOfFound, tuples_count);
+                    }
+                    else{
+                        field_t empty_tuple[1];
+                        int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
+                               empty_tuple,
+                               0);
+                        sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
+                    }
+                }
+                printTupleArray(tuples, 10);
 
             }
         }

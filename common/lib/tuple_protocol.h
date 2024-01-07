@@ -9,7 +9,10 @@
 #define FIELD_2_ACTUAL_POS  (sizeof(char) * 8 - 6)
 #define FIELD_2_TYPE_POS    (sizeof(char) * 8 - 7)
 
+int getBit(unsigned char byte, int position);
+
 int serializePacket(char* packet, int command, char* tuple_name, field_t* fields, int num_fields);
+int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fields, int* num_fields);
 
 void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tuple_name_len);
 

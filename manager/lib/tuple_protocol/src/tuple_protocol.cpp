@@ -1,4 +1,5 @@
 #include "tuple_protocol.h"
+#include "./udp_setup.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -48,6 +49,10 @@ float bytesToFloat(unsigned char byte1, unsigned char byte2, unsigned char byte3
     return result;
 }
 
+int getBit(unsigned char byte, int position) {
+    return (byte >> position) & 1;
+}
+
 int serializePacket(char* packet, int command, char* tuple_name, field_t* fields, int num_fields){
     int total_packet_size = 0;
     short flags[8] = {0};
@@ -84,12 +89,60 @@ int serializePacket(char* packet, int command, char* tuple_name, field_t* fields
             if (fields[i].type == TS_INT){
                 for (int j = 0; j<sizeof(uint32_t); j++){
                     packet[total_packet_size++] = intToBytes(fields[i].data.int_field, j);
+                    //printf("%02x ", intToBytes(htonl(fields[0].data.int_field), i));
                 }
             }
             else if (fields[i].type == TS_FLOAT){
                 for (int j = 0; j<sizeof(float); j++){
                     packet[total_packet_size++] = floatToBytes(fields[i].data.float_field, j);
+                    //printf("%02x ", floatToBytes(htonl(fields[1].data.float_field), i));
                 }
+            }
+        }
+    }
+
+    return total_packet_size;
+}
+
+int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fields, int* num_fields) {
+    int total_packet_size = 0;
+
+    // Extract flags_combined byte
+    unsigned char flags_combined = packet[total_packet_size++];
+    // Extract tuple_name length
+    int tuple_name_length = packet[total_packet_size++];
+    // Extract tuple_name
+    for (int i = 0; i < tuple_name_length; ++i) {
+        tuple_name[i] = packet[total_packet_size++];
+    }
+    tuple_name[tuple_name_length] = '\0'; // Null-terminate the string
+
+    // Reconstruct command and num_fields from flags_combined
+    *command = ((flags_combined >> 1) & 1) << 1 | (flags_combined & 1);
+    *num_fields = getBit(packet[0], NUM_FIELDS_POS)+1;
+
+    // Extract fields
+    int bit_pos = 4;
+    for (int i = 0; i <= *num_fields; i++)
+    {
+        fields[i].is_actual = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+        fields[i].type = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+
+        if (fields[i].is_actual == TS_YES) {
+            if (fields[i].type == TS_INT) {
+                // Assuming sizeof(int) is 4 bytes
+                fields[i].data.int_field = bytesToInt(
+                    packet[total_packet_size++],
+                    packet[total_packet_size++],
+                    packet[total_packet_size++],
+                    packet[total_packet_size++]
+                );
+            } else if (fields[i].type == TS_FLOAT) {
+                // Assuming sizeof(float) is 4 bytes
+                fields[i].data.float_field = bytesToFloat(packet[total_packet_size++], 
+                                                            packet[total_packet_size++], 
+                                                            packet[total_packet_size++], 
+                                                            packet[total_packet_size++]);
             }
         }
     }
@@ -106,7 +159,6 @@ void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tupl
     }
     printf("\n");
 }
-/* Implementation of ts_out function */
 int ts_out(char* tuple_name, field_t* fields, int num_fields) {
     unsigned char packet[1024];
     memset(packet, 0, sizeof(packet));
@@ -115,7 +167,8 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
 
     displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
-    Udp.write(packet, total_packet_size);
+    
+    send_udp_packet(packet, total_packet_size);
 
     return TS_SUCCESS;
 }
@@ -129,15 +182,18 @@ int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
 
     displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
+    send_udp_packet(packet, total_packet_size);
+
     unsigned char rec_packet[1024];
     memset(rec_packet, 0, sizeof(rec_packet));
 
-    //send_udp_packet(rec_packet, total_packet_size);
-
-    //int total_packet_size_rec = receive_udp_packet(packet, 1024);
+    int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
     
-    //displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
-
+    displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
+    int command;
+    unsigned char tuple_name_rec[32];
+    int num_fields_rec;
+    total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
 
     return TS_SUCCESS;
 }
@@ -151,16 +207,19 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
 
     displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
-    //send_udp_packet(packet, total_packet_size);
+    send_udp_packet(packet, total_packet_size);
 
     unsigned char rec_packet[1024];
     memset(rec_packet, 0, sizeof(rec_packet));
-
-    //int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
     
-    //displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
-
+    int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
     
+    displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
+    int command;
+    unsigned char tuple_name_rec[32];
+    int num_fields_rec;
+    total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
 
     return TS_SUCCESS;
 }
+

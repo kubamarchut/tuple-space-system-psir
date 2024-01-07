@@ -3,22 +3,20 @@
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
 #include <tuple_protocol.h>
+#include <udp_setup.h>
 
-#define UDP_TUPLE_SPACE_PORT 2001
+#define MAX 4096
 #define MAX_BUFFER 32
 #define PACKET_BUFFER_LENGTH 32
 
 char buffer[MAX_BUFFER];
 unsigned char packetBuffer[PACKET_BUFFER_LENGTH];
 
-byte MAC[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x01}; 
-
-unsigned int localPort = UDP_TUPLE_SPACE_PORT;
-ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
-
-ZsutEthernetUDP Udp;
 FILE f_out;
 int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
+
+unsigned long previousMillis = 0;
+const long interval = 2000; // Interval in milliseconds (1 second)
 
 void setup()
 {
@@ -33,7 +31,8 @@ void setup()
   Serial.print(F(__TIME__));
   Serial.println(F("]"));
 
-  ZsutEthernet.begin(MAC);
+  //ZsutEthernet.begin(MAC);
+  setupUDP();
 
   Serial.print(F("My IP address: "));
   for (byte thisByte = 0; thisByte < 4; thisByte++)
@@ -43,45 +42,49 @@ void setup()
   }
   Serial.println();
 
-  Udp.begin(localPort);
+  //Udp.begin(5000);
 
-  ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
+  //ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
   /*Udp.beginPacket(client_ip, localPort);
   packetBuffer[0] = HELLO_MSG;
   Udp.write(packetBuffer, 1);
   Udp.endPacket();*/
 }
 
+uint32_t i = 2;
+
 void loop()
 {
-    field_t my_tuple[2];    /* an array of fields (name not included) */
+  unsigned long currentMillis = ZsutMillis();
+  if (currentMillis - previousMillis >= interval) {
+    
+    
+    field_t my_tuple[1];    /* an array of fields (name not included) */
 
     /* make a tuple */
     my_tuple[0].is_actual = TS_YES;
     my_tuple[0].type = TS_INT;
-    my_tuple[0].data.int_field = 128;
-    my_tuple[1].is_actual = TS_YES;
-    my_tuple[1].type = TS_FLOAT;
-    my_tuple[1].data.float_field = 3.14;
+    my_tuple[0].data.int_field = i++;
 
-    printf("size of int: %d\n", sizeof(float));
-
-    unsigned char packet[1024];
-    //int packet_len;
-   // int packet_len = serializePacket(packet, TS_CMD_OUT, "nice_constants", my_tuple, 2);
     
-    //displayProtocolBytes(packet, packet_len, 14);
-
     /* add a tuple to the tuple space */
-    ts_out("nice_constants", my_tuple, 2);
+    ts_out("check_prime", my_tuple, 1);
 
-  int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
-  int MAX = 5000;
-  for (int i = 2; i <= MAX; i++){
-    Udp.beginPacket(client_ip, localPort);
-    packetBuffer[0] = i;
-    Udp.write(packetBuffer, 1);
-    Udp.endPacket();
-    delay(1000);
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_NO;
+    my_tuple[0].type = TS_INT;
+    //my_tuple[0].data.int_field = i++;
+
+    
+    /* add a tuple to the tuple space */
+    ts_inp("check_prime", my_tuple, 1);
+
+
+    if (i >= MAX){i = 0;}
+    previousMillis = currentMillis;
   }
+
 }
+
+
+  

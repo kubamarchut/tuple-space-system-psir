@@ -34,15 +34,18 @@ int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
 
     displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
+    send_udp_packet(packet, total_packet_size);
+
     unsigned char rec_packet[1024];
     memset(rec_packet, 0, sizeof(rec_packet));
 
-    send_udp_packet(rec_packet, total_packet_size);
-
-    int total_packet_size_rec = receive_udp_packet(packet, 1024);
+    int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
     
     displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
-
+    int command;
+    unsigned char tuple_name_rec[32];
+    int num_fields_rec;
+    total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
 
     return TS_SUCCESS;
 }
@@ -64,7 +67,10 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
     int total_packet_size_rec = receive_udp_packet(rec_packet, 1024);
     
     displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
-
+    int command;
+    unsigned char tuple_name_rec[32];
+    int num_fields_rec;
+    total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
     
 
     return TS_SUCCESS;

@@ -8,9 +8,10 @@
 #define TS_SUCCESS  1
 #define TS_FAILURE  0
 
-#define TS_CMD_OUT  0
-#define TS_CMD_IN   1
-#define TS_CMD_RD   2
+#define TS_CMD_OUT        0
+#define TS_CMD_IN         1
+#define TS_CMD_RD         2
+#define TS_CMD_NO_TUPLE   3
 
 typedef struct {
     int is_actual;  /* does the data member contains data */
