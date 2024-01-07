@@ -2,25 +2,29 @@
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
+#include <tuple_protocol.h>
+#include <udp_setup.h>
 #include <PrimeCheck.h>
 
-#define UDP_TUPLE_SPACE_PORT 2001
+#define MAX 4096
 #define MAX_BUFFER 32
 #define PACKET_BUFFER_LENGTH 32
 
 char buffer[MAX_BUFFER];
 unsigned char packetBuffer[PACKET_BUFFER_LENGTH];
 
-byte MAC[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x01}; 
+FILE f_out;
+int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
-unsigned int localPort = UDP_TUPLE_SPACE_PORT;
-
-ZsutEthernetUDP Udp;
+unsigned long previousMillis = 0;
+const long interval = 1000; // Interval in milliseconds (1 second)
 
 void setup()
 {
+  fdev_setup_stream(&f_out, sput, nullptr, _FDEV_SETUP_WRITE);
+  stdout = &f_out;
   Serial.begin(115200);
-  Serial.print(F("Worker init... ["));
+  Serial.print(F("Manager init... ["));
   Serial.print(F(__FILE__));
   Serial.print(F(", "));
   Serial.print(F(__DATE__));
@@ -28,7 +32,8 @@ void setup()
   Serial.print(F(__TIME__));
   Serial.println(F("]"));
 
-  ZsutEthernet.begin(MAC);
+  //ZsutEthernet.begin(MAC);
+  setupUDP();
 
   Serial.print(F("My IP address: "));
   for (byte thisByte = 0; thisByte < 4; thisByte++)
@@ -38,47 +43,47 @@ void setup()
   }
   Serial.println();
 
-  Udp.begin(localPort);
+  //Udp.begin(5000);
 
-  /*ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
-  Udp.beginPacket(client_ip, localPort);
+  //ZsutIPAddress client_ip = ZsutIPAddress(192, 168, 89, 11);
+  /*Udp.beginPacket(client_ip, localPort);
   packetBuffer[0] = HELLO_MSG;
   Udp.write(packetBuffer, 1);
   Udp.endPacket();*/
 }
 
+uint32_t i = 2;
+
 void loop()
 {
-  int temp = 1; //REMOVE BEFOR FLIGHT - just testing compilation
-  int MAX = 100;
-  for (int i = 2; i <= MAX; i++){
-    int prime = isPrime(i);
-    Serial.print(i, DEC);
-    if (prime == 1){
-      Serial.print(F(" is prime\n"));
+  unsigned long currentMillis = ZsutMillis();
+  if (currentMillis - previousMillis >= interval) {
+    field_t my_tuple[1];    /* an array of fields (name not included) */
+
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_NO;
+    my_tuple[0].type = TS_INT;
+    my_tuple[0].data.int_field = NULL;
+
+    /* add a tuple to the tuple space */
+    ts_inp("check_prime", my_tuple, 1);
+
+    uint32_t test =  my_tuple[0].data.int_field;
+    if (test != NULL){
+      printf("checking int %d", test);
+      if (isPrime(test) == 1)
+        printf(" it is a prime\n");
+      else
+        printf(" it is not a prime\n");
+      Serial.println("");
     }
-    else{
-      Serial.print(F(" is not prime\n"));
+    else {
+      printf("nothing to check\n");
     }
-    delay(100);
+
+
+    if (i >= MAX){i = 0;}
+    previousMillis = currentMillis;
   }
-  int packetSize = Udp.parsePacket();
-  if (packetSize > 0)
-  {
-    int len = Udp.read(packetBuffer, PACKET_BUFFER_LENGTH);
 
-    sprintf(buffer, "%s", packetBuffer);
-
-    String client_message = String(buffer);
-
-    Serial.print(F("Recieved: "));
-
-    if (packetBuffer[0] == temp)
-    {
-      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-      packetBuffer[0] = temp;
-      Udp.write(packetBuffer, PACKET_BUFFER_LENGTH);
-      Udp.endPacket();
-    }
-  }
 }

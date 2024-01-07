@@ -16,7 +16,7 @@ FILE f_out;
 int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
 unsigned long previousMillis = 0;
-const long interval = 2000; // Interval in milliseconds (1 second)
+const long interval = 500; // Interval in milliseconds (1 second)
 
 void setup()
 {
@@ -57,8 +57,7 @@ void loop()
 {
   unsigned long currentMillis = ZsutMillis();
   if (currentMillis - previousMillis >= interval) {
-    
-    
+    Serial.println("some time has passed sending new tuple");
     field_t my_tuple[1];    /* an array of fields (name not included) */
 
     /* make a tuple */
@@ -66,19 +65,23 @@ void loop()
     my_tuple[0].type = TS_INT;
     my_tuple[0].data.int_field = i++;
 
-    
+    Serial.print("sending new tuple: ");
     /* add a tuple to the tuple space */
     ts_out("check_prime", my_tuple, 1);
-
+    Serial.println("");
+    
+    //delay(1000);
     /* make a tuple */
-    my_tuple[0].is_actual = TS_NO;
-    my_tuple[0].type = TS_INT;
+    //my_tuple[0].is_actual = TS_NO;
+    //my_tuple[0].type = TS_INT;
     //my_tuple[0].data.int_field = i++;
 
-    
+    //Serial.print("sending tuple request: ");
     /* add a tuple to the tuple space */
-    ts_inp("check_prime", my_tuple, 1);
-
+    //ts_inp("check_prime", my_tuple, 1);
+    //Serial.println("\n---------------------------------");
+    //Serial.println("");
+    
 
     if (i >= MAX){i = 0;}
     previousMillis = currentMillis;
