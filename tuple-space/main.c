@@ -179,7 +179,7 @@ int main(){
 
                     if (indexOfFound >= 0){
                         unsigned char packet[1024];
-                        int total_packet_size = createPacket(packet, TS_CMD_RD, tuples[indexOfFound].tuple_name, 
+                        int total_packet_size = serializePacket(packet, TS_CMD_RD, tuples[indexOfFound].tuple_name, 
                                tuples[indexOfFound].fields,
                                tuples[indexOfFound].number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);

@@ -26,8 +26,6 @@ typedef struct {
 /* these functions return TS_SUCCESS or TS_FAILURE */
 /* parameters : tuple name , other fields , no. of other fields */
 
-int createPacket(char* packet, int command, char* tuple_name, field_t* fields, int num_fields);
-
 // this function should adds a tuple with specified fields to the tuple space
 int ts_out (char*, field_t *, int);
 

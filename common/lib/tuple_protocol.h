@@ -9,6 +9,14 @@
 #define FIELD_2_ACTUAL_POS  (sizeof(char) * 8 - 6)
 #define FIELD_2_TYPE_POS    (sizeof(char) * 8 - 7)
 
+int serializePacket(char* packet, int command, char* tuple_name, field_t* fields, int num_fields);
+
 void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tuple_name_len);
+
+int intToBytes(int number, int index);
+int floatToBytes(float number, int index);
+
+int bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);
+float bytesToFloat(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);
 
 #endif
