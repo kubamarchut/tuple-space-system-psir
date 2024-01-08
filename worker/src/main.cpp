@@ -33,6 +33,8 @@ void setup()
   Serial.println(F("]"));
 
   //ZsutEthernet.begin(MAC);
+  
+  randomSeed(ZsutMillis());
   setupUDP();
 
   Serial.print(F("My IP address: "));

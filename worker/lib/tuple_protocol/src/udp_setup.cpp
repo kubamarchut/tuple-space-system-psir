@@ -1,16 +1,16 @@
 #include "udp_setup.h"
 
 #define UDP_TUPLE_SPACE_PORT 5000
-#define LOCAL_PORT 5010
 
 byte MAC[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x01}; 
 
-unsigned int localPort = LOCAL_PORT;
+unsigned int localPort = random(999, 99999);
 ZsutIPAddress client_ip = ZsutIPAddress(172, 21, 161, 164);
 
 ZsutEthernetUDP Udp;
 
 void setupUDP() {
+  localPort = random(999, 99999);
   ZsutEthernet.begin(MAC);
   Udp.begin(localPort);
 }
