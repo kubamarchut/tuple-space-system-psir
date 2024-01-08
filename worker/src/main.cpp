@@ -73,6 +73,15 @@ void loop()
     uint32_t test =  my_tuple[0].data.int_field;
     if (test != NULL){
       printf("checking int %d", test);
+      field_t tuple_result[2];
+      tuple_result[0].is_actual = TS_YES;
+      tuple_result[0].type = TS_INT;
+      tuple_result[0].data.int_field = test;
+      tuple_result[1].is_actual = TS_YES;
+      tuple_result[1].type = TS_INT;
+      tuple_result[1].data.int_field = isPrime(test);
+      ts_out("check_prime_result", tuple_result, 2);
+
       if (isPrime(test) == 1)
         printf(" it is a prime\n");
       else

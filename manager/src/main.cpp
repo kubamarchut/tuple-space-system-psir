@@ -66,9 +66,34 @@ void loop()
     my_tuple[0].data.int_field = i++;
 
     Serial.print("sending new tuple: ");
-    /* add a tuple to the tuple space */
+        /* add a tuple to the tuple space */
     ts_out("check_prime", my_tuple, 1);
-    Serial.println("");
+
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_NO;
+    my_tuple[0].type = TS_INT;
+    my_tuple[0].data.int_field = NULL;
+
+    field_t tuple_result[2];
+    tuple_result[0].is_actual = TS_NO;
+    tuple_result[0].type = TS_INT;
+    tuple_result[0].data.int_field = NULL;
+    tuple_result[1].is_actual = TS_NO;
+    tuple_result[1].type = TS_INT;
+    tuple_result[1].data.int_field = NULL;
+    ts_inp("check_prime_result", tuple_result, 2);
+
+    uint32_t test =  tuple_result[0].data.int_field;
+    if (test != NULL){
+      printf("received result for int %d", test);
+      if (tuple_result[1].data.int_field == 1){
+        printf(" is prime\n");
+      }
+      else{
+        printf(" is not prime\n");
+      }
+    }
+
     
     //delay(1000);
     /* make a tuple */

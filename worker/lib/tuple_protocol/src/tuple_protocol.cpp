@@ -204,7 +204,7 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
 
     int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_name, fields, num_fields);
 
-    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    //displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
     send_udp_packet(packet, total_packet_size);
 
@@ -212,7 +212,7 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
     
     int total_packet_size_rec = receive_udp_packet(packet, 1024);
     
-    displayProtocolBytes(packet, total_packet_size_rec, packet[1]);
+    //displayProtocolBytes(packet, total_packet_size_rec, packet[1]);
     int command;
     unsigned char tuple_name_rec[32];
     int num_fields_rec;
