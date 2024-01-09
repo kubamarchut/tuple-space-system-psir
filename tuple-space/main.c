@@ -55,8 +55,8 @@ int main(){
                     exit(-1);
                 }
                 received_message[pos]='\0';
-                printTimestamp();
-                printf(" - new message from (%s:%d)\n", inet_ntoa(c.sin_addr),ntohs(c.sin_port));
+                //printTimestamp();
+                //printf(" - new message from (%s:%d)\n", inet_ntoa(c.sin_addr),ntohs(c.sin_port));
                 
                 int command_type;
                 unsigned char tuple_name[32];

@@ -2,7 +2,7 @@
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
 #include <ZsutFeatures.h>
-#include <tuple_protocol.h>
+#include <tuple_space.h>
 #include <udp_setup.h>
 
 #define MAX 8042
@@ -33,7 +33,6 @@ void setup()
   Serial.print(F(__TIME__));
   Serial.println(F("]"));
 
-  //ZsutEthernet.begin(MAC);
   setupUDP();
 
   Serial.print(F("My IP address: "));
@@ -66,11 +65,12 @@ void loop()
     tuple_result[1].is_actual = TS_NO;
     tuple_result[1].type = TS_INT;
     tuple_result[1].data.int_field = NULL;
-    ts_inp("check_prime_result", tuple_result, 2);
+    const char* tuple_name = "check_prime_result";
+    ts_inp(tuple_name, tuple_result, 2);
 
     uint32_t test =  tuple_result[0].data.int_field;
     if (test != NULL){
-      printf("received result for int %d", test);
+      printf("received result for int %ld", test);
       if (tuple_result[1].data.int_field == 1){
         printf(" is prime\n");
       }
@@ -89,7 +89,7 @@ void loop()
     my_tuple[0].type = TS_INT;
     my_tuple[0].data.int_field = i--;
 
-    //Serial.print("sending new tuple: ");
+    //Serial.println("sending new tuple: ");
         /* add a tuple to the tuple space */
     ts_out("check_prime", my_tuple, 1);
 

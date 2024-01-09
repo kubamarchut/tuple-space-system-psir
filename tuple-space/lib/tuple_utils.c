@@ -12,7 +12,7 @@ const char *stats_labels[4] = {
     };
 
 int removeTupleByID(tuple_struct tuples[], int index, int tuples_count, tuple_struct empty){
-    printf("\tremoving tuple nr %d\n", index);
+    //printf("\tremoving tuple nr %d\n", index);
     tuples[index] = tuples[tuples_count - 1];
     tuples[tuples_count - 1] = empty;
 
@@ -29,6 +29,7 @@ int searchTupleByName(tuple_struct tuples[], char* search_name, int max_index) {
 }
 
 void printTupleArray(tuple_struct tuples[], int size, int stats[]) {
+    printf("\033[2J\033[H");
     printf("+--------------------+---------------+--------------------+--------------------+\n");
     printf("|     Tuple Name     | No. of Fields |      Field 1       |      Field 2       |\n");
     printf("+--------------------+---------------+--------------------+--------------------+\n");
