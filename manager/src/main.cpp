@@ -5,7 +5,7 @@
 #include <tuple_protocol.h>
 #include <udp_setup.h>
 
-#define MAX 4096
+#define MAX 8042
 #define MAX_BUFFER 32
 #define PACKET_BUFFER_LENGTH 32
 
@@ -15,8 +15,10 @@ unsigned char packetBuffer[PACKET_BUFFER_LENGTH];
 FILE f_out;
 int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
-unsigned long previousMillis = 0;
-const long interval = 1000; // Interval in milliseconds (1 second)
+unsigned long previousMillis_1 = 0;
+unsigned long previousMillis_2 = 0;
+const long interval_1 = 500; // Interval in milliseconds (1 second)
+const long interval_2 = 100; // Interval in milliseconds (1 second)
 
 void setup()
 {
@@ -51,29 +53,12 @@ void setup()
   Udp.endPacket();*/
 }
 
-uint32_t i = 2;
+uint32_t i = MAX;
 
 void loop()
 {
   unsigned long currentMillis = ZsutMillis();
-  if (currentMillis - previousMillis >= interval) {
-    //Serial.println("some time has passed sending new tuple");
-    field_t my_tuple[1];    /* an array of fields (name not included) */
-
-    /* make a tuple */
-    my_tuple[0].is_actual = TS_YES;
-    my_tuple[0].type = TS_INT;
-    my_tuple[0].data.int_field = i++;
-
-    //Serial.print("sending new tuple: ");
-        /* add a tuple to the tuple space */
-    ts_out("check_prime", my_tuple, 1);
-
-    /* make a tuple */
-    my_tuple[0].is_actual = TS_NO;
-    my_tuple[0].type = TS_INT;
-    my_tuple[0].data.int_field = NULL;
-
+  if (currentMillis - previousMillis_2 >= interval_2) {
     field_t tuple_result[2];
     tuple_result[0].is_actual = TS_NO;
     tuple_result[0].type = TS_INT;
@@ -93,7 +78,25 @@ void loop()
         printf(" is not prime\n");
       }
     }
+    previousMillis_2 = currentMillis;
+  }
+  if (currentMillis - previousMillis_1 >= interval_1) {
+    //Serial.println("some time has passed sending new tuple");
+    field_t my_tuple[1];    /* an array of fields (name not included) */
 
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_YES;
+    my_tuple[0].type = TS_INT;
+    my_tuple[0].data.int_field = i--;
+
+    //Serial.print("sending new tuple: ");
+        /* add a tuple to the tuple space */
+    ts_out("check_prime", my_tuple, 1);
+
+    /* make a tuple */
+    my_tuple[0].is_actual = TS_NO;
+    my_tuple[0].type = TS_INT;
+    my_tuple[0].data.int_field = NULL;
     
     //delay(1000);
     /* make a tuple */
@@ -108,8 +111,8 @@ void loop()
     //Serial.println("");
     
 
-    if (i >= MAX){i = 0;}
-    previousMillis = currentMillis;
+    if (i <= 2){i = MAX;}
+    previousMillis_1 = currentMillis;
   }
 
 }

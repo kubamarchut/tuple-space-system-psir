@@ -120,31 +120,33 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
     tuple_name[tuple_name_length] = '\0'; // Null-terminate the string
 
     // Reconstruct command and num_fields from flags_combined
-    *command = ((flags_combined >> 1) & 1) << 1 | (flags_combined & 1);
+    *command = packet[0] >> COMMAND_TYPE_POS & COMMAND_TYPE_MASK;
     *num_fields = getBit(packet[0], NUM_FIELDS_POS)+1;
 
-    // Extract fields
-    int bit_pos = 4;
-    for (int i = 0; i <= *num_fields; i++)
-    {
-        fields[i].is_actual = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
-        fields[i].type = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+    if(*command == TS_CMD_OUT){
+        // Extract fields
+        int bit_pos = 4;
+        for (int i = 0; i < *num_fields; i++)
+        {
+            fields[i].is_actual = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
+            fields[i].type = packet[0] >> (sizeof(char) * 8 - bit_pos++) & 1;
 
-        if (fields[i].is_actual == TS_YES) {
-            if (fields[i].type == TS_INT) {
-                // Assuming sizeof(int) is 4 bytes
-                fields[i].data.int_field = bytesToInt(
-                    packet[total_packet_size++],
-                    packet[total_packet_size++],
-                    packet[total_packet_size++],
-                    packet[total_packet_size++]
-                );
-            } else if (fields[i].type == TS_FLOAT) {
-                // Assuming sizeof(float) is 4 bytes
-                fields[i].data.float_field = bytesToFloat(packet[total_packet_size++], 
-                                                            packet[total_packet_size++], 
-                                                            packet[total_packet_size++], 
-                                                            packet[total_packet_size++]);
+            if (fields[i].is_actual == TS_YES) {
+                if (fields[i].type == TS_INT) {
+                    // Assuming sizeof(int) is 4 bytes
+                    fields[i].data.int_field = bytesToInt(
+                        packet[total_packet_size++],
+                        packet[total_packet_size++],
+                        packet[total_packet_size++],
+                        packet[total_packet_size++]
+                    );
+                } else if (fields[i].type == TS_FLOAT) {
+                    // Assuming sizeof(float) is 4 bytes
+                    fields[i].data.float_field = bytesToFloat(packet[total_packet_size++], 
+                                                                packet[total_packet_size++], 
+                                                                packet[total_packet_size++], 
+                                                                packet[total_packet_size++]);
+                }
             }
         }
     }
