@@ -86,7 +86,6 @@ void loop()
         printf(" it is a prime\n");
       else
         printf(" it is not a prime\n");
-      Serial.println("");
     }
     else {
       printf("nothing to check\n");

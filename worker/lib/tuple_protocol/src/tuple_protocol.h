@@ -51,7 +51,7 @@ void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tupl
 int intToBytes(uint32_t number, int index);
 int floatToBytes(float number, int index);
 
-int bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);
+uint32_t bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);
 float bytesToFloat(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4);
 
 

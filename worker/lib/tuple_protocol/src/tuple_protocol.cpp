@@ -11,8 +11,8 @@ int intToBytes(uint32_t num, int index){
     return (num >> pos) & 0xFF;
 }
 
-int bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4) {
-    int result = 0;
+uint32_t bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte3, unsigned char byte4) {
+    uint32_t result = 0;
 
     result |= byte4;
     result <<= 8;
@@ -146,7 +146,7 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
             }
         }
     }
-
+    
     return total_packet_size;
 }
 
@@ -165,7 +165,7 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
 
     int total_packet_size = serializePacket(packet, TS_CMD_OUT, tuple_name, fields, num_fields);
 
-    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    //displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
     
     send_udp_packet(packet, total_packet_size);
