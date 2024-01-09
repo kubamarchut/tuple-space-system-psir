@@ -17,6 +17,17 @@ jobs:
     - name: build unit-test
       working-directory: ${{github.workspace}}/worker/lib/PrimeCheck
       run: gcc ./unit_test.cpp ./src/PrimeCheck.cpp -o unit_test.exe -Incruses
+
+  build-tuple-space:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build tuple-space
+      working-directory: ${{github.workspace}}/tuple-space
+      run: make
   
   test-prime-check:
   
