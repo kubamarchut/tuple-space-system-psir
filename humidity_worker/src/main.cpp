@@ -62,16 +62,26 @@ void loop()
   if (currentMillis - previousMillis >= interval)
   {
     field_t my_tuple[1]; /* an array of fields (name not included) */
+    field_t alarm_check[1];
 
     /* make a tuple */
     my_tuple[0].is_actual = TS_NO;
     my_tuple[0].type = TS_INT;
     my_tuple[0].data.int_field = NULL;
 
-    /* add a tuple to the tuple space */
-    ts_inp("check_alarm", my_tuple, 1);
+    alarm_check[0].is_actual = TS_NO;
+    alarm_check[0].type = TS_INT;
+    alarm_check[0].data.int_field = NULL;
 
-    uint32_t test = my_tuple[0].data.int_field;
+    /* add a tuple to the tuple space */
+    ts_inp("check_humidity", alarm_check, 1);
+
+    if (alarm_check[1].data.int_field == 0)
+    {
+      printf(" ALARM!\n");
+    }
+
+    uint32_t test = ZsutAnalog5Read();
     if (test != NULL)
     {
       printf("checking int %d", test);
@@ -82,7 +92,7 @@ void loop()
       tuple_result[1].is_actual = TS_YES;
       tuple_result[1].type = TS_INT;
       tuple_result[1].data.int_field = humidity(test);
-      ts_out("check_humidity_result", tuple_result, 2);
+      ts_out("alarm_check", tuple_result, 2);
 
       if (tuple_result[1].data.int_field == 0)
         printf(" ALARM!!\n");
