@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "src/PrimeCheck.h"
+#include "src/HumidityCheck.h"
 
 void test(int testSubject, int expectedValue)
 {

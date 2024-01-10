@@ -1,4 +1,4 @@
-#include "PrimeCheck.h"
+#include "HumidityCheck.h"
 
 int humidity(int n)
 {

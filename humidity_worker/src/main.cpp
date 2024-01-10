@@ -4,7 +4,7 @@
 #include <ZsutFeatures.h>
 #include <tuple_protocol.h>
 #include <udp_setup.h>
-#include <PrimeCheck.h>
+#include <HumidityCheck.h>
 
 #define MAX 4096
 #define MAX_BUFFER 32
@@ -69,7 +69,7 @@ void loop()
     my_tuple[0].data.int_field = NULL;
 
     /* add a tuple to the tuple space */
-    ts_inp("check_humidity", my_tuple, 1);
+    ts_inp("check_alarm", my_tuple, 1);
 
     uint32_t test = my_tuple[0].data.int_field;
     if (test != NULL)
