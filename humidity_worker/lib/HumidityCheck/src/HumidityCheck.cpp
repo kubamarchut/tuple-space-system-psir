@@ -4,7 +4,7 @@ int humidity(int n)
 {
     for (int i = 2; i <= n / 2; i++)
     {
-        if (n / 100 >= 70)
+        if (n >= 200)
             return 0;
     }
     return 1;

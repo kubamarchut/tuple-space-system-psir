@@ -73,18 +73,20 @@ void loop()
     alarm_check[0].type = TS_INT;
     alarm_check[0].data.int_field = NULL;
 
-    /* add a tuple to the tuple space */
-    ts_inp("check_humidity", alarm_check, 1);
-
-    if (alarm_check[1].data.int_field == 0)
+    if (alarm_check[0].data.int_field == 0)
     {
       printf(" ALARM!\n");
+      delay(2000);
+      alarm_check[0].data.int_field = 1;
     }
+
+    /* add a tuple to the tuple space */
+    ts_inp("check_humidity", alarm_check, 1);
 
     uint32_t test = ZsutAnalog5Read();
     if (test != NULL)
     {
-      printf("checking int %d", test);
+      printf("checking int %d\n", test);
       field_t tuple_result[2];
       tuple_result[0].is_actual = TS_YES;
       tuple_result[0].type = TS_INT;
