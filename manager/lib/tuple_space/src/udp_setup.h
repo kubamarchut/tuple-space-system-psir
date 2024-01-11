@@ -28,4 +28,6 @@ int send_udp_packet(unsigned char *buffer, int length);
 //   size of the received packet if successful, -1 if there was an error in receiving or reading the packet
 int receive_udp_packet(char *buffer, int length);
 
+int receive_udp_packet_timeout(char *buffer, int length, int timeout_seconds);
+
 #endif

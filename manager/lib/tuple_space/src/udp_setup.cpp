@@ -42,3 +42,19 @@ int receive_udp_packet(char *buffer, int length){
 
   return -1;
 }
+
+int receive_udp_packet_timeout(char *buffer, int length, int timeout_seconds) {
+  unsigned long startTime = ZsutMillis();
+
+  while ((ZsutMillis() - startTime) < timeout_seconds * 1000) {
+    int packetSize = Udp.parsePacket();
+    if (packetSize > 0) {
+      int bytesRead = Udp.read(buffer, length);
+      if (bytesRead > 0) {
+        return packetSize;
+      }
+    }
+  }
+
+  return -1;
+}

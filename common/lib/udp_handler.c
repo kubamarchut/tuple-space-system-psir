@@ -92,6 +92,46 @@ int receive_udp_packet(char *buffer, int length){
     return pos; // Placeholder, replace with actual logic
 }
 
+int receive_udp_packet_timeout(char *buffer, int length, int timeout_seconds) {
+    struct sockaddr_in c;
+    int pos, c_len = sizeof(c);
+
+    // Set up fd_set for select
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(udp_socket, &read_fds);
+
+    // Set timeout for select
+    struct timeval timeout;
+    timeout.tv_sec = timeout_seconds;
+    timeout.tv_usec = 0;
+
+    // Use select to wait for data or timeout
+    int ready = select(udp_socket + 1, &read_fds, NULL, NULL, &timeout);
+
+    if (ready < 0) {
+        printError(__LINE__, __FILE__, strerror(errno));
+        exit(-1);
+    } else if (ready == 0) {
+        // Timeout occurred
+        printf("Timeout occurred. No data received.\n");
+        return -1;
+    }
+
+    // Data is ready to be received
+    if ((pos = recvfrom(udp_socket, buffer, length, 0,
+                        (struct sockaddr *)&c, &c_len)) < 0) {
+        printError(__LINE__, __FILE__, strerror(errno));
+        exit(-1);
+    } else {
+        printTimestamp();
+        printf(" - receiving a message\n");
+    }
+
+    buffer[pos] = '\0';
+    return pos;
+}
+
 void close_udp_socket()
 {
     if (udp_socket != -1)

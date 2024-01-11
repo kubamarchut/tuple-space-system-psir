@@ -22,6 +22,7 @@ int main(void)
     my_tuple[0].data.int_field = 128;
     my_tuple[1].is_actual = TS_YES;
     my_tuple[1].type = TS_FLOAT;
+    //my_tuple[1].data.string_field = "tete tete tete";
     my_tuple[1].data.float_field = 3.14;
 
     /* add a tuple to the tuple space */
@@ -34,7 +35,10 @@ int main(void)
     my_template[0].type = TS_FLOAT;          /* need to specify the type */
     /* retrieveand remove a tuple with temperature */
     /* some other process must have produced a tuple matching the template */
-    ts_inp("temperature", my_template, 1);      /* ("temperature",?float) */
+    int cmd_result = ts_inp("temperature", my_template, 1);      /* ("temperature",?float) */
+    if (cmd_result == TS_FAILURE){
+        return -1;
+    }
     sleep(1);
     temp = my_template[0].data.float_field;
     
@@ -45,7 +49,10 @@ int main(void)
     my_tuple[1].data.float_field = -3.14;
 
     printf("starting \"read\" operation\n");
-    ts_rdp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
+    cmd_result = ts_rdp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
+    if (cmd_result == TS_FAILURE){
+        return -1;
+    }
     sleep(1);
     nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
     pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
@@ -58,8 +65,12 @@ int main(void)
     my_tuple[0].data.int_field = -128;
     my_tuple[1].data.float_field = -3.14;
 
+
     printf("starting \"in\" operation\n");
-    ts_inp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
+    cmd_result = ts_inp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
+    if (cmd_result == TS_FAILURE){
+        return -1;
+    }
     nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
     pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
 

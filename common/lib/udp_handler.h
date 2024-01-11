@@ -9,6 +9,7 @@ int init_udp_socket(char* ip_addr, char* port);
 //handling simple UDP packet sending
 int send_udp_packet(unsigned char* buffer, int length);
 int receive_udp_packet(char* buffer, int length);
+int receive_udp_packet_timeout(char* buffer, int length, int timeout_seconds);
 void close_udp_socket();
 
 #endif /* UDP_HANDLER_H */

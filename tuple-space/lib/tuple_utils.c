@@ -50,7 +50,7 @@ void printTupleArray(tuple_struct tuples[], int size, int stats[]) {
                     } else if (tuples[i].fields[j].type == 1) {
                         printf(" Float: %11.2f ", tuples[i].fields[j].data.float_field);
                     } else if (tuples[i].fields[j].type == 2) {
-                        printf(" String: %s ", tuples[i].fields[j].data.string_field);
+                        printf(" Str: %*.*s ", 13, 13, tuples[i].fields[j].data.string_field);
                     }
                 }
                 else {

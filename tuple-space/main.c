@@ -14,7 +14,7 @@
 
 #define PORT "5000"
 #define MAX_BUFF 1024
-#define MAX_TUPLES 512
+#define MAX_TUPLES 128
 
 int stats[4] = {0,0,0,0};
 
