@@ -15,13 +15,6 @@ const char *stats_labels[4] = {
         "No. messages \"rd\" type",
         "No. no matching tuple",
     };
-void copyFieldArrayToTuple(tuple_struct *destTuple, field_t *fieldArray, int numFields) {
-    destTuple->number_of_fields = numFields;
-
-    for (int i = 0; i < numFields; ++i) {
-        memcpy(&(destTuple->fields[i]), &(fieldArray[i]), sizeof(field_t));
-    }
-}
 
 int my_strcmp(const char *str1, const char *str2) {
     while (*str1 != '\0' && *str2 != '\0') {
@@ -35,9 +28,68 @@ int my_strcmp(const char *str1, const char *str2) {
     return (*str1 - *str2);
 }
 
-int searchMatchingTupleAsk(){
-    //TODO: add logic
-    return -1;
+int compareTuples(tuple_struct tupleA, char* search_name, int search_num_fields, field_t* search_fields){
+    if (my_strcmp(tupleA.tuple_name, search_name) == 0) {
+        // comparing fields
+        if (tupleA.number_of_fields == search_num_fields){
+            int fields_match = 1;  // Assume fields are matching until proven otherwise
+            for (int j = 0; j < search_num_fields; j++) {
+                if (tupleA.fields[j].type != search_fields[j].type){
+                    fields_match = 0;  // Fields do not match
+                    break;
+                }
+                else {
+                    if (search_fields[j].type == TS_INT){
+                        if (search_fields[j].is_actual == tupleA.fields[j].is_actual &&
+                        search_fields[j].data.int_field == tupleA.fields[j].data.int_field){
+                            fields_match = 0;  // Fields do not match
+                            break;
+                        }
+                    }
+                    else if (search_fields[j].type == TS_FLOAT){
+                        if (search_fields[j].is_actual == tupleA.fields[j].is_actual &&
+                        search_fields[j].data.float_field == tupleA.fields[j].data.float_field){
+                            fields_match = 0;  // Fields do not match
+                            break;
+                        }
+                    }
+                    else if (search_fields[j].type == TS_STR){
+                        if (search_fields[j].is_actual == tupleA.fields[j].is_actual &&
+                        my_strcmp(search_fields[j].data.string_field, tupleA.fields[j].data.string_field) == 0){
+                            fields_match = 0;  // Fields do not match
+                            break;
+                        }
+                    }
+                }
+                    
+            }
+
+            if (fields_match) {
+                return 1;  // Found the tuple, return success
+            }
+        }
+        
+        return 1; // Found the tuple, return success
+    }
+    return 0;
+}
+
+void copyFieldArrayToTuple(tuple_struct *destTuple, field_t *fieldArray, int numFields) {
+    destTuple->number_of_fields = numFields;
+
+    for (int i = 0; i < numFields; ++i) {
+        memcpy(&(destTuple->fields[i]), &(fieldArray[i]), sizeof(field_t));
+    }
+}
+
+int searchMatchingTupleAsk(tuple_ask tuple_asks[], int *tuples_asks_count, char* search_name, int search_num_fields, field_t* search_fields, int max_index){
+    for (int i = 0; i < max_index & i < *tuples_asks_count; ++i) {
+        int tuple_check = compareTuples(tuple_asks[i].tuple, search_name, search_num_fields, search_fields);
+        if (tuple_check){
+            return i;
+        }
+    }
+    return -1; // Tuple with the specified name not found
 }
 
 int addTupleToSpace(int *tuples_count, char *tuple_name, int num_fields, field_t *tuple_fields, int max_tuples) {
@@ -59,49 +111,12 @@ int removeTupleByID(tuple_struct tuples[], int index, int tuples_count, tuple_st
 
     return tuples_count - 1;
 }
-int searchMatchingTuple(tuple_struct tuples[], char* search_name, int search_num_fields, field_t* search_fields, int max_index) {
-    for (int i = 0; i < max_index; ++i) {
-        if (my_strcmp(tuples[i].tuple_name, search_name) == 0) {
-            // comparing fields
-            if (tuples[i].number_of_fields == search_num_fields){
-                int fields_match = 1;  // Assume fields are matching until proven otherwise
-                for (int j = 0; j < search_num_fields; j++) {
-                    if (tuples[i].fields[j].type != search_fields[j].type){
-                        fields_match = 0;  // Fields do not match
-                        break;
-                    }
-                    else {
-                        if (search_fields[j].type == TS_INT){
-                            if (search_fields[j].is_actual == tuples[i].fields[j].is_actual &&
-                            search_fields[j].data.int_field == tuples[i].fields[j].data.int_field){
-                                fields_match = 0;  // Fields do not match
-                                break;
-                            }
-                        }
-                        else if (search_fields[j].type == TS_FLOAT){
-                            if (search_fields[j].is_actual == tuples[i].fields[j].is_actual &&
-                            search_fields[j].data.float_field == tuples[i].fields[j].data.float_field){
-                                fields_match = 0;  // Fields do not match
-                                break;
-                            }
-                        }
-                        else if (search_fields[j].type == TS_STR){
-                            if (search_fields[j].is_actual == tuples[i].fields[j].is_actual &&
-                            my_strcmp(search_fields[j].data.string_field, tuples[i].fields[j].data.string_field) == 0){
-                                fields_match = 0;  // Fields do not match
-                                break;
-                            }
-                        }
-                    }
-                        
-                }
 
-                if (fields_match) {
-                    return i;  // Found the tuple, return its index
-                }
-            }
-            
-            return i; // Found the tuple, return its index
+int searchMatchingTuple(tuple_struct tuples[], int *tuples_count, char* search_name, int search_num_fields, field_t* search_fields, int max_index){
+    for (int i = 0; i < max_index & i < *tuples_count; ++i) {
+        int tuple_check = compareTuples(tuples[i], search_name, search_num_fields, search_fields);
+        if (tuple_check){
+            return i;
         }
     }
     return -1; // Tuple with the specified name not found

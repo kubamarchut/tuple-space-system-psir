@@ -66,7 +66,7 @@ int main(){
                                                         &num_fields);
 
                 if(command_type == TS_CMD_OUT) {
-                    int tuple_ask_index = searchMatchingTupleAsk();
+                    int tuple_ask_index = searchMatchingTupleAsk(tuple_asks, &tuples_asks_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
                     if (tuple_ask_index >= 0){
                         unsigned char packet[1024];
                         int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_asks[tuple_ask_index].tuple.tuple_name, 
@@ -85,7 +85,7 @@ int main(){
                 else if (command_type == TS_CMD_RD || command_type == TS_CMD_RD_P || command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
                     if (command_type == TS_CMD_RD) stats[TS_CMD_RD]++;
                     // TODO: fix tuples to search
-                    int indexOfFound = searchMatchingTuple(tuples, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
+                    int indexOfFound = searchMatchingTuple(tuples, &tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
 
                     unsigned char packet[1024];
                     if (indexOfFound >= 0){
