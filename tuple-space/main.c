@@ -83,7 +83,7 @@ int main(){
                     stats[TS_CMD_OUT]++;
                 }
                 else if (command_type == TS_CMD_RD || command_type == TS_CMD_RD_P || command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
-                    if (command_type == TS_CMD_RD) stats[TS_CMD_RD]++;
+                    if (command_type == TS_CMD_RD_P) stats[TS_CMD_RD_P]++;
                     // TODO: fix tuples to search
                     int indexOfFound = searchMatchingTuple(tuples, &tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
 
@@ -93,20 +93,20 @@ int main(){
                                tuples[indexOfFound].fields,
                                tuples[indexOfFound].number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
-                        if (command_type == TS_CMD_IN){
+                        if (command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
                             stats[TS_CMD_IN]++;
                             tuples_count = removeTupleByID(tuples, indexOfFound, tuples_count, empty_tuple);
                         }
                     }
                     else{
-                        if (command_type == TS_CMD_RD || command_type == TS_CMD_IN){
+                        if (command_type == TS_CMD_RD_P || command_type == TS_CMD_IN_P){
                             field_t empty_tuple[1];
                             int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
                                 empty_tuple, 0);
                             sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
                             stats[TS_CMD_NO_TUPLE]++;
                         }
-                        else if (command_type == TS_CMD_RD_P || command_type == TS_CMD_IN_P){
+                        else if (command_type == TS_CMD_RD || command_type == TS_CMD_IN){
                             tuple_asks[tuples_asks_count].source = c;
                             tuple_asks[tuples_asks_count].command = command_type;
                             strcpy(tuple_asks[tuples_asks_count].tuple.tuple_name, tuple_name);
