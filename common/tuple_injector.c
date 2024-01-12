@@ -26,7 +26,7 @@ int main(void)
     if (cmd_result == TS_FAILURE){
         return -1;
     }
-    sleep(1);
+    sleep(10);
     
     /* transform a previously usedusedtuple into a template */
     my_tuple[0].is_actual = TS_YES;
@@ -40,7 +40,6 @@ int main(void)
     if (cmd_result == TS_FAILURE){
         return -1;
     }
-    sleep(1);
         
     return 0;
 }

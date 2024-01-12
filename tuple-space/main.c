@@ -69,13 +69,14 @@ int main(){
                     int tuple_ask_index = searchMatchingTupleAsk(tuple_asks, &tuples_asks_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
                     if (tuple_ask_index >= 0){
                         unsigned char packet[1024];
-                        int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_asks[tuple_ask_index].tuple.tuple_name, 
-                               tuple_asks[tuple_ask_index].tuple.fields,
+                        int total_packet_size = serializePacket(packet, tuple_asks[tuple_ask_index].command, tuple_asks[tuple_ask_index].tuple.tuple_name, 
+                               tuple_fields,
                                tuple_asks[tuple_ask_index].tuple.number_of_fields);
-                        sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
+                        sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&tuple_asks[tuple_ask_index].source, c_len);
                         if (command_type == TS_CMD_RD_P){
                             addTupleToSpace(&tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
                         }
+                        tuples_asks_count = removeTupleAskByID(tuple_asks, tuple_ask_index, tuples_asks_count, empty_ask);
                     }
                     else{
                         addTupleToSpace(&tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);

@@ -104,6 +104,15 @@ int addTupleToSpace(int *tuples_count, char *tuple_name, int num_fields, field_t
         return 0; // Failure
     }
 }
+
+int removeTupleAskByID(tuple_ask tuple_asks[], int index, int tuple_asks_count, tuple_ask empty){
+    //printf("\tremoving tuple nr %d\n", index);
+    tuple_asks[index] = tuple_asks[tuple_asks_count - 1];
+    tuple_asks[tuple_asks_count - 1] = empty;
+
+    return tuple_asks_count - 1;
+}
+
 int removeTupleByID(tuple_struct tuples[], int index, int tuples_count, tuple_struct empty){
     //printf("\tremoving tuple nr %d\n", index);
     tuples[index] = tuples[tuples_count - 1];

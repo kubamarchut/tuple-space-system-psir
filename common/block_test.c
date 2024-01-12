@@ -25,8 +25,9 @@ int main(void)
     if (cmd_result == TS_FAILURE){
         return -1;
     }
-    sleep(1);
     temp = my_template[0].data.float_field;
+    printf("gotten \n\ttemp: %12f\n\n", temp);
+    sleep(1);
     
     /* transform a previously usedusedtuple into a template */
     my_tuple[0].is_actual = TS_NO;
@@ -39,7 +40,6 @@ int main(void)
     if (cmd_result == TS_FAILURE){
         return -1;
     }
-    sleep(1);
     nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
     pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
 

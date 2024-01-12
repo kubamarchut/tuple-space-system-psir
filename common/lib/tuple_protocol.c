@@ -205,7 +205,7 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
                 for (int j = 0; j < field_len; j++)
                 {
                     fields[i].data.string_field[j] = packet[total_packet_size++];
-                    printf("field str: %c\n", fields[i].data.string_field[j]);
+                    printf("field str: %02X\n", fields[i].data.string_field[j]);
                 }
             }
         }
