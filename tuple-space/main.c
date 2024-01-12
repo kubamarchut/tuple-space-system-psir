@@ -14,16 +14,13 @@
 
 #define PORT "5000"
 #define MAX_BUFF 1024
-#define MAX_TUPLES 128
 
-int stats[4] = {0,0,0,0};
-
-tuple_struct tuples[MAX_TUPLES], empty_tuple;
 
 int main(){
     int udp_socket = init_udp_socket("", PORT);
 
     int tuples_count = 0;
+    int tuples_asks_count = 0;
     
     fd_set readfds;
     struct timeval tv;
@@ -61,26 +58,38 @@ int main(){
                 int command_type;
                 unsigned char tuple_name[32];
                 int num_fields;
-                field_t tuple_fields[2];
+                field_t tuple_fields[16];
 
                 int total_packet_size = deserializePacket(received_message,
                                                         &command_type, tuple_name,
-                                                        tuples[tuples_count].fields,
+                                                        tuple_fields,
                                                         &num_fields);
 
                 if(command_type == TS_CMD_OUT) {
-                    strcpy(tuples[tuples_count].tuple_name, tuple_name);
-                    tuples[tuples_count].number_of_fields = num_fields;
+                    int tuple_ask_index = searchMatchingTupleAsk();
+                    if (tuple_ask_index >= 0){
+                        unsigned char packet[1024];
+                        int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_asks[tuple_ask_index].tuple.tuple_name, 
+                               tuple_asks[tuple_ask_index].tuple.fields,
+                               tuple_asks[tuple_ask_index].tuple.number_of_fields);
+                        sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
+                        if (command_type == TS_CMD_RD_P){
+                            addTupleToSpace(&tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
+                        }
+                    }
+                    else{
+                        addTupleToSpace(&tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
+                    }
                     stats[TS_CMD_OUT]++;
-                    tuples_count++;
                 }
-                else if (command_type == TS_CMD_RD || command_type == TS_CMD_IN){
+                else if (command_type == TS_CMD_RD || command_type == TS_CMD_RD_P || command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
                     if (command_type == TS_CMD_RD) stats[TS_CMD_RD]++;
-                    int indexOfFound = searchTupleByName(tuples, tuple_name, MAX_TUPLES);
+                    // TODO: fix tuples to search
+                    int indexOfFound = searchMatchingTuple(tuples, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
 
                     unsigned char packet[1024];
                     if (indexOfFound >= 0){
-                        int total_packet_size = serializePacket(packet, TS_CMD_RD, tuples[indexOfFound].tuple_name, 
+                        int total_packet_size = serializePacket(packet, command_type, tuples[indexOfFound].tuple_name, 
                                tuples[indexOfFound].fields,
                                tuples[indexOfFound].number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
@@ -90,10 +99,22 @@ int main(){
                         }
                     }
                     else{
-                        field_t empty_tuple[1];
-                        int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
-                               empty_tuple, 0);
-                        sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
+                        if (command_type == TS_CMD_RD || command_type == TS_CMD_IN){
+                            field_t empty_tuple[1];
+                            int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
+                                empty_tuple, 0);
+                            sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
+                            stats[TS_CMD_NO_TUPLE]++;
+                        }
+                        else if (command_type == TS_CMD_RD_P || command_type == TS_CMD_IN_P){
+                            tuple_asks[tuples_asks_count].source = c;
+                            tuple_asks[tuples_asks_count].command = command_type;
+                            strcpy(tuple_asks[tuples_asks_count].tuple.tuple_name, tuple_name);
+                            tuple_asks[tuples_asks_count].tuple.number_of_fields = num_fields;
+                            copyFieldArrayToTuple(&tuple_asks[tuples_asks_count].tuple, tuple_fields, num_fields);
+                            stats[TS_CMD_NO_TUPLE]++;
+                            tuples_asks_count++;
+                        }
                     }
                 }
                 else if (command_type == TS_CMD_IN){
