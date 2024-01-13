@@ -80,7 +80,7 @@ int main(){
                                tuple_fields,
                                tuple_asks[tuple_ask_index].tuple.number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&tuple_asks[tuple_ask_index].source, c_len);
-                        if (command_type == TS_CMD_RD_P){
+                        if (tuple_asks[tuple_ask_index].command == TS_CMD_RD){
                             addTupleToSpace(&tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
                         }
                         tuples_asks_count = removeTupleAskByID(tuple_asks, tuple_ask_index, tuples_asks_count, empty_ask);

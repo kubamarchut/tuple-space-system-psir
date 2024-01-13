@@ -13,22 +13,23 @@ int main(void)
 
     int nice_power;
     double temp, pi;
-    field_t my_tuple[2];    /* an array of fields (name not included) */
+    field_t my_tuple[2];
     field_t my_template[1];
    
-    /* make a template */
+    printf("starting \"out\" operation\n");
     my_template[0].is_actual = TS_YES;
-    my_template[0].type = TS_FLOAT;          /* need to specify the type */
-    my_template[0].data.float_field = -457.8085;          /* need to specify the type */
-    /* retrieveand remove a tuple with temperature */
-    /* some other process must have produced a tuple matching the template */
-    int cmd_result = ts_out("temperature", my_template, 1);      /* ("temperature",?float) */
+    my_template[0].type = TS_FLOAT;
+    my_template[0].data.float_field = -457.8085;
+    
+    
+    int cmd_result = ts_out("temperature", my_template, 1);
     if (cmd_result == TS_FAILURE){
         return -1;
     }
-    sleep(10);
+    sleep(5);
     
-    /* transform a previously usedusedtuple into a template */
+    printf("starting \"out\" operation\n");
+    
     my_tuple[0].is_actual = TS_YES;
     my_tuple[1].is_actual = TS_YES;
     my_tuple[0].type = TS_INT;
@@ -36,7 +37,7 @@ int main(void)
     my_tuple[0].data.int_field = -128;
     my_tuple[1].data.float_field = -3.14;
 
-    cmd_result = ts_out("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
+    cmd_result = ts_out("nice_constants", my_tuple, 2);
     if (cmd_result == TS_FAILURE){
         return -1;
     }
