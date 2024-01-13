@@ -5,7 +5,8 @@
 #include <tuple_space.h>
 #include <udp_setup.h>
 
-#define MAX 8042
+#define MIN 2
+#define MAX 32
 #define MAX_BUFFER 32
 #define PACKET_BUFFER_LENGTH 32
 
@@ -17,8 +18,8 @@ int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
 unsigned long previousMillis_1 = 0;
 unsigned long previousMillis_2 = 0;
-const long interval_1 = 500; // Interval in milliseconds (1 second)
-const long interval_2 = 100; // Interval in milliseconds (1 second)
+const long interval_1 = 750; // Interval in milliseconds (1 second)
+const long interval_2 = 250; // Interval in milliseconds (1 second)
 
 void setup()
 {
@@ -33,6 +34,7 @@ void setup()
   Serial.print(F(__TIME__));
   Serial.println(F("]"));
 
+  randomSeed(ZsutMillis());
   setupUDP();
 
   Serial.print(F("My IP address: "));
@@ -52,24 +54,31 @@ void setup()
   Udp.endPacket();*/
 }
 
-uint32_t i = MAX;
+uint32_t i = MIN;
+uint32_t checked_ints = 0;
+bool finished = false;
 
 void loop()
 {
   unsigned long currentMillis = ZsutMillis();
-  if (currentMillis - previousMillis_2 >= interval_2) {
+  if (currentMillis - previousMillis_2 >= interval_2 && checked_ints < MAX-1) {
     field_t tuple_result[2];
     tuple_result[0].is_actual = TS_NO;
     tuple_result[0].type = TS_INT;
-    tuple_result[0].data.int_field = NULL;
     tuple_result[1].is_actual = TS_NO;
     tuple_result[1].type = TS_INT;
-    tuple_result[1].data.int_field = NULL;
     const char* tuple_name = "check_prime_result";
-    ts_inp(tuple_name, tuple_result, 2);
+    int in_result = ts_inp(tuple_name, tuple_result, 2);
+    if (in_result == TS_FAILURE){
+        printf("an error encourted\n");
+    }
+    else if (in_result == TS_NO_TUPLE){
+        //printf("no tuple matched your tuple template\n");
+    }
+    else if (in_result == TS_SUCCESS){
+      checked_ints++;
+      uint32_t test =  tuple_result[0].data.int_field;
 
-    uint32_t test =  tuple_result[0].data.int_field;
-    if (test != NULL){
       printf("received result for int %ld", test);
       if (tuple_result[1].data.int_field == 1){
         printf(" is prime\n");
@@ -80,38 +89,28 @@ void loop()
     }
     previousMillis_2 = currentMillis;
   }
-  if (currentMillis - previousMillis_1 >= interval_1) {
+
+  if (currentMillis - previousMillis_1 >= interval_1 && !finished) {
     //Serial.println("some time has passed sending new tuple");
     field_t my_tuple[1];    /* an array of fields (name not included) */
 
     /* make a tuple */
     my_tuple[0].is_actual = TS_YES;
     my_tuple[0].type = TS_INT;
-    my_tuple[0].data.int_field = i--;
+    my_tuple[0].data.int_field = i++;
 
     //Serial.println("sending new tuple: ");
         /* add a tuple to the tuple space */
-    ts_out("check_prime", my_tuple, 1);
-
-    /* make a tuple */
-    my_tuple[0].is_actual = TS_NO;
-    my_tuple[0].type = TS_INT;
-    my_tuple[0].data.int_field = NULL;
-    
-    //delay(1000);
-    /* make a tuple */
-    //my_tuple[0].is_actual = TS_NO;
-    //my_tuple[0].type = TS_INT;
-    //my_tuple[0].data.int_field = i++;
-
-    //Serial.print("sending tuple request: ");
-    /* add a tuple to the tuple space */
-    //ts_inp("check_prime", my_tuple, 1);
-    //Serial.println("\n---------------------------------");
-    //Serial.println("");
+    int out_result = ts_out("check_prime", my_tuple, 1);
+    if (out_result == TS_FAILURE){
+      printf("an error encourted\n");
+    }
+    else if (out_result == TS_SUCCESS){
+      //printf("new task sent\n");
+    }
     
 
-    if (i <= 2){i = MAX;}
+    if (i > MAX){finished = true;}
     previousMillis_1 = currentMillis;
   }
 

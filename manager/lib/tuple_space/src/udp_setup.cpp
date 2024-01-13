@@ -11,6 +11,7 @@ ZsutIPAddress client_ip = ZsutIPAddress(172, 21, 161, 164);
 ZsutEthernetUDP Udp;
 
 int setupUDP(){
+  localPort = random(999, 99999); 
   ZsutEthernet.begin(MAC);
   int socket = Udp.begin(localPort);
 
@@ -46,7 +47,7 @@ int receive_udp_packet(char *buffer, int length){
 int receive_udp_packet_timeout(char *buffer, int length, int timeout_seconds) {
   unsigned long startTime = ZsutMillis();
 
-  while ((ZsutMillis() - startTime) < timeout_seconds * 1000) {
+  while ((ZsutMillis() - startTime) < (unsigned long) timeout_seconds * 1000) {
     int packetSize = Udp.parsePacket();
     if (packetSize > 0) {
       int bytesRead = Udp.read(buffer, length);
@@ -54,6 +55,7 @@ int receive_udp_packet_timeout(char *buffer, int length, int timeout_seconds) {
         return packetSize;
       }
     }
+    delay(10);
   }
 
   return -1;

@@ -134,7 +134,7 @@ int main(){
                         }
                     }
                 }
-                printTupleArray(tuples, 10, stats);
+                printTupleArray(tuples, 25, stats);
             }
         }
     }
