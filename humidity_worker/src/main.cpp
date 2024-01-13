@@ -73,12 +73,13 @@ void loop()
     alarm_check[0].type = TS_INT;
     alarm_check[0].data.int_field = NULL;
 
-    if (alarm_check[0].data.int_field == 0)
+    /*if (alarm_check[0].data.int_field == 0)
     {
-      printf(" ALARM!\n");
-      delay(2000);
+      // printf(" ALARM!\n");
+      Serial.println("ALARM condition met!");
+      delay(1500);
       alarm_check[0].data.int_field = 1;
-    }
+    }*/
 
     /* add a tuple to the tuple space */
     ts_inp("check_humidity", alarm_check, 1);
@@ -86,7 +87,7 @@ void loop()
     uint32_t test = ZsutAnalog5Read();
     if (test != NULL)
     {
-      printf("checking int %d\n", test);
+      printf("humidity is %d\n", test / 10);
       field_t tuple_result[2];
       tuple_result[0].is_actual = TS_YES;
       tuple_result[0].type = TS_INT;
@@ -94,23 +95,24 @@ void loop()
       tuple_result[1].is_actual = TS_YES;
       tuple_result[1].type = TS_INT;
       tuple_result[1].data.int_field = humidity(test);
-      ts_out("alarm_check", tuple_result, 2);
+      ts_out("alarm_status", tuple_result, 2);
 
-      if (tuple_result[1].data.int_field == 0)
-        printf(" ALARM!!\n");
-      else
+      if (tuple_result[1].data.int_field == 1)
         printf(" All good\n");
+      else if (tuple_result[1].data.int_field == 0)
+      {
+        printf("ALARM\n");
+        delay(1500);
+      }
+      else
+        printf("Nothing to check");
       Serial.println("");
-    }
-    else
-    {
-      printf("nothing to check\n");
-    }
 
-    if (i >= MAX)
-    {
-      i = 0;
+      if (i >= MAX)
+      {
+        i = 0;
+      }
+      previousMillis = currentMillis;
     }
-    previousMillis = currentMillis;
   }
 }
