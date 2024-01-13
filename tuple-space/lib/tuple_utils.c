@@ -1,32 +1,25 @@
 #include "tuple_utils.h"
 #include "../../common/lib/tuple_space.h"
+#include "../../common/lib/tuple_protocol.h"
 
 #include <stdio.h> //printf
 #include <string.h> //strlen
 
 
-int stats[6] = {0};
+int stats[8] = {0};
 tuple_struct tuples[MAX_TUPLES], empty_tuple;
 tuple_ask tuple_asks[MAX_TUPLES], empty_ask;
 
-const char *stats_labels[4] = {
-        "No. messages \"out\" type",
-        "No. messages \"in\" type",
-        "No. messages \"rd\" type",
-        "No. no matching tuple",
+const char *stats_labels[8] = {
+        "\"out\" messages",
+        "\"in\" messages",
+        "\"rd\" messages",
+        "\"inp\" messages",
+        "\"rdp\" messages",
+        "No matching tuples",
+        "Total received",
+        "Avg. message length"
     };
-
-int my_strcmp(const char *str1, const char *str2) {
-    while (*str1 != '\0' && *str2 != '\0') {
-        if (*str1 != *str2) {
-            return (*str1 - *str2);
-        }
-        str1++;
-        str2++;
-    }
-
-    return (*str1 - *str2);
-}
 
 int compareTuples(tuple_struct tupleA, char* search_name, int search_num_fields, field_t* search_fields){
     if (my_strcmp(tupleA.tuple_name, search_name) == 0) {
@@ -173,16 +166,19 @@ void printTupleArray(tuple_struct tuples[], int size, int stats[]) {
         printf("\n");
     }
     printf("+--------------------+---------------+--------------------+--------------------+\n");
-    printf("+------------------------------------+\n");
-    printf("|            Statistics              |\n");
-    printf("+----------------------------+-------+\n");
+    printf("+----------------------------------------------------------+\n");
+    printf("|                        Statistics                        |\n");
+    printf("+----------------+-------+----------------------+----------+\n");
     for (int i = 0; i < 4; ++i) {
-        if (i==3) {
-            printf("| %-*s | %*d |\n",26, stats_labels[i], 5, stats[i+2]);
+        if (i<3){
+            printf("| %-*s | %*d ",14, stats_labels[i], 5, stats[i]);
+            printf("| %-*s | %*d |\n",20, stats_labels[i+4], 8, stats[i+4]);
         }
         else{
-            printf("| %-*s | %*d |\n",26, stats_labels[i], 5, stats[i]);
+            float avgSize = stats[7]/stats[6];
+            printf("| %-*s | %*d ",14, stats_labels[i], 5, stats[i]);
+            printf("| %-*s | %*.*f |\n",20, stats_labels[i+4], 8, 2, avgSize);
         }
     }
-    printf("+----------------------------+-------+\n");
+    printf("+----------------+-------+----------------------+----------+\n");
 }

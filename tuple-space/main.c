@@ -51,6 +51,8 @@ int main(){
                     printError(__LINE__, __FILE__, strerror(errno));
                     exit(-1);
                 }
+                stats[6]++;
+                stats[7]+=pos;
                 received_message[pos]='\0';
                 //printTimestamp();
                 //printf(" - new message from (%s:%d)\n", inet_ntoa(c.sin_addr),ntohs(c.sin_port));
@@ -64,6 +66,11 @@ int main(){
                                                         &command_type, tuple_name,
                                                         tuple_fields,
                                                         &num_fields);
+                if (total_packet_size < 0){
+                    printError(__LINE__, __FILE__, "failed to retrieve tuple");
+                    printf("%d", total_packet_size);
+                    continue;
+                }
 
                 if(command_type == TS_CMD_OUT) {
                     int tuple_ask_index = searchMatchingTupleAsk(tuple_asks, &tuples_asks_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
@@ -85,6 +92,9 @@ int main(){
                 }
                 else if (command_type == TS_CMD_RD || command_type == TS_CMD_RD_P || command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
                     if (command_type == TS_CMD_RD_P) stats[TS_CMD_RD_P]++;
+                    else if (command_type == TS_CMD_RD) stats[TS_CMD_RD]++;
+                    else if (command_type == TS_CMD_IN_P) stats[TS_CMD_IN_P]++;
+                    else if (command_type == TS_CMD_IN) stats[TS_CMD_IN]++;
                     // TODO: fix tuples to search
                     int indexOfFound = searchMatchingTuple(tuples, &tuples_count, tuple_name, num_fields, tuple_fields, MAX_TUPLES);
 
@@ -95,7 +105,6 @@ int main(){
                                tuples[indexOfFound].number_of_fields);
                         sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
                         if (command_type == TS_CMD_IN || command_type == TS_CMD_IN_P){
-                            stats[TS_CMD_IN]++;
                             tuples_count = removeTupleByID(tuples, indexOfFound, tuples_count, empty_tuple);
                         }
                     }
@@ -104,7 +113,7 @@ int main(){
                             field_t empty_tuple[1];
                             int total_packet_size = serializePacket(packet, TS_CMD_NO_TUPLE, tuple_name, 
                                 empty_tuple, 0);
-                            sendto(udp_socket, packet, pos, 0, (struct sockaddr*)&c, c_len);
+                            sendto(udp_socket, packet, total_packet_size, 0, (struct sockaddr*)&c, c_len);
                             stats[TS_CMD_NO_TUPLE]++;
                         }
                         else if (command_type == TS_CMD_RD || command_type == TS_CMD_IN){

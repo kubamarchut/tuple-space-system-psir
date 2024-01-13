@@ -3,6 +3,7 @@
 
 #include <ZsutEthernet.h>
 #include <ZsutEthernetUdp.h>
+#include <ZsutFeatures.h>
 
 // declaring the Udp object
 extern ZsutEthernetUDP Udp;

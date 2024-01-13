@@ -2,6 +2,27 @@
 #include <stdio.h>
 #include <string.h>
 
+int powerOfTwo(int n){
+    if(n<0){
+        return -1;
+    }
+    int result = 1;
+    for (int i = 0; i < n; i++)
+    {
+        result *= 2;
+    }
+    return result;
+}
+
+int genChecksum(unsigned char *packet, int total_packet_size, int bit_len){
+    int sum = 0;
+    for (int i = 0; i < total_packet_size; i++)
+    {
+        sum += packet[i];
+    }
+    
+    return sum % powerOfTwo(bit_len);
+}
 int intToBytes(uint32_t num, int index){
     int pos = (sizeof(uint32_t) - 1) * 8;
     pos -= index * 8;

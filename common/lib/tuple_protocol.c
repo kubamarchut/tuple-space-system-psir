@@ -1,7 +1,19 @@
-#include <stdio.h>
-#include <string.h>
 #include "tuple_space.h"
 #include "tuple_protocol.h"
+#include <stdio.h>
+#include <string.h>
+
+int my_strcmp(const char *str1, const char *str2) {
+    while (*str1 != '\0' && *str2 != '\0') {
+        if (*str1 != *str2) {
+            return (*str1 - *str2);
+        }
+        str1++;
+        str2++;
+    }
+
+    return (*str1 - *str2);
+}
 
 int powerOfTwo(int n){
     if(n<0){
@@ -80,7 +92,7 @@ int serializePacket(char* packet, int command, char* tuple_name, field_t* fields
     if (strlen(tuple_name) > 32){
         return -1;
     }
-    if (num_fields < 1){
+    if (num_fields < 0){
         return -1;
     }
     if (num_fields > 16){
@@ -124,28 +136,32 @@ int serializePacket(char* packet, int command, char* tuple_name, field_t* fields
         if (fields[i].type == TS_INT){
             tuple_desc |= (sizeof(fields[i].data.int_field) & 0x1f);
             packet[total_packet_size++] = tuple_desc;
-            for (int j = 0; j<sizeof(int); j++){
-                packet[total_packet_size++] = intToBytes(fields[i].data.int_field, j);
-                //printf("%02x ", intToBytes(htonl(fields[0].data.int_field), i));
+            if(fields[i].is_actual){
+                for (int j = 0; j<sizeof(int); j++){
+                    packet[total_packet_size++] = intToBytes(fields[i].data.int_field, j);
+                    //printf("%02x ", intToBytes(htonl(fields[0].data.int_field), i));
+                }
             }
         }
         else if (fields[i].type == TS_FLOAT){
             tuple_desc |= (sizeof(fields[i].data.float_field) & 0x1f);
             packet[total_packet_size++] = tuple_desc;
-            for (int j = 0; j<sizeof(int); j++){
-                packet[total_packet_size++] = floatToBytes(fields[i].data.float_field, j);
-                //printf("%02x ", floatToBytes(htonl(fields[1].data.float_field), i));
+            if(fields[i].is_actual){
+                for (int j = 0; j<sizeof(int); j++){
+                    packet[total_packet_size++] = floatToBytes(fields[i].data.float_field, j);
+                    //printf("%02x ", floatToBytes(htonl(fields[1].data.float_field), i));
+                }
             }
         }
         else if (fields[i].type == TS_STR){
             tuple_desc |= (strlen(fields[i].data.string_field) & 0x1f);
             packet[total_packet_size++] = tuple_desc;
-            for (int j = 0; j < strlen(fields[i].data.string_field); j++)
-            {
-                packet[total_packet_size++] = fields[i].data.string_field[j];
+            if(fields[i].is_actual){
+                for (int j = 0; j < strlen(fields[i].data.string_field); j++)
+                {
+                    packet[total_packet_size++] = fields[i].data.string_field[j];
+                }
             }
-            
-
         }
     }
     int checksum = genChecksum(packet, total_packet_size, 3);
@@ -165,6 +181,9 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
     unsigned char flags_combined = packet[total_packet_size++];
     // Extract tuple_name length
     int tuple_name_length = (packet[total_packet_size++] & 0x1f) + 1;
+    // Extract checksum 
+    int extracted_checksum = (packet[1] >> 5) & 0x07;
+    packet[1] &= ~(0x07 << 5);
     // Extract tuple_name
     for (int i = 0; i < tuple_name_length; ++i) {
         tuple_name[i] = packet[total_packet_size++];
@@ -175,6 +194,8 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
     // Reconstruct command and num_fields from flags_combined
     *command = packet[0] >> COMMAND_TYPE_POS & COMMAND_TYPE_MASK;
     *num_fields = (packet[0] & 0x0f) + 1;
+
+    if (*command == TS_CMD_NO_TUPLE){return 0;}
 
     // Extract fields
     for (int i = 0; i < *num_fields; i++)
@@ -211,7 +232,10 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
         }
     }
 
-    //return 0;
+    int checksum = genChecksum(packet, total_packet_size, 3);
+    if (extracted_checksum != checksum){
+        return -1; // bit flip detection
+    }
     return total_packet_size;
 }
 
@@ -219,7 +243,7 @@ void displayProtocolBytes(unsigned char *packet, int total_packet_size, int tupl
     for (int i = 0; i < total_packet_size; i++) {
         printf("%02x ", packet[i]);
 
-        if (i == 0 || i == 1 || i == tuple_name_len + 1 || i == tuple_name_len + 1 + 4)
+        if (i == 0 || i == 1 || i == tuple_name_len + 1)
             printf("| ");
     }
     printf("\n");

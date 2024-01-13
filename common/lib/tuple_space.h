@@ -7,7 +7,8 @@
 #define TS_FLOAT    1
 #define TS_STR      2
 #define TS_SUCCESS  1
-#define TS_FAILURE  0
+#define TS_NO_TUPLE  0
+#define TS_FAILURE  -1
 
 #define TS_CMD_OUT        0
 #define TS_CMD_IN         1

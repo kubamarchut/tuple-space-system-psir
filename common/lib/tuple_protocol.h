@@ -9,6 +9,7 @@
 #define FIELD_2_ACTUAL_POS  (sizeof(char) * 8 - 6)
 #define FIELD_2_TYPE_POS    (sizeof(char) * 8 - 7)
 
+int my_strcmp(const char *str1, const char *str2);
 int genChecksum(unsigned char *packet, int total_packet_size, int bit_len);
 int getBit(unsigned char byte, int position);
 

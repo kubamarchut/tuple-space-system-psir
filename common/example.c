@@ -16,6 +16,7 @@ int main(void)
     field_t my_tuple[2];    /* an array of fields (name not included) */
     field_t my_template[1];
 
+    printf("starting \"out\" operation\n");
     /* make a tuple */
     my_tuple[0].is_actual = TS_YES;
     my_tuple[0].type = TS_INT;
@@ -28,8 +29,8 @@ int main(void)
     /* add a tuple to the tuple space */
     ts_out("nice_constants", my_tuple, 2);      /* ("nice_constants",128,3.14) */
     sleep(1);
+    printf("\n");
 
-    
     /* make a template */
     my_template[0].is_actual = TS_NO;
     my_template[0].type = TS_FLOAT;          /* need to specify the type */
@@ -37,45 +38,62 @@ int main(void)
     /* some other process must have produced a tuple matching the template */
     int cmd_result = ts_inp("temperature", my_template, 1);      /* ("temperature",?float) */
     if (cmd_result == TS_FAILURE){
+        printf("an error encourted");
         return -1;
     }
+    else if (cmd_result == TS_NO_TUPLE){
+        printf("no tuple matched your tuple template\n");
+    }
+    else if (cmd_result == TS_SUCCESS){
+        printf("received correct tuple\n");
+        temp = my_template[0].data.float_field;
+    }
     sleep(1);
-    temp = my_template[0].data.float_field;
-    
+    printf("\n");
+
     /* transform a previously usedusedtuple into a template */
     my_tuple[0].is_actual = TS_NO;
     my_tuple[1].is_actual = TS_NO;
-    my_tuple[0].data.int_field = -128;
-    my_tuple[1].data.float_field = -3.14;
 
-    printf("starting \"read\" operation\n");
+    printf("starting \"rdp\" operation\n");
     cmd_result = ts_rdp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
     if (cmd_result == TS_FAILURE){
+        printf("an error encourted");
         return -1;
     }
-    sleep(1);
-    nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
-    pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
+    else if (cmd_result == TS_NO_TUPLE){
+        printf("no tuple matched your tuple template\n");
+    }
+    else if (cmd_result == TS_SUCCESS){
+        printf("received correct tuple\n");
+        nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
+        pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
 
-    printf("gotten \n\tnice_power: %6d", nice_power);
-    printf("\n\tpi: %14f\n\n", pi);
+        printf("gotten \n\tnice_power: %6d", nice_power);
+        printf("\n\tpi: %14f\n\n", pi);
+    }
+    sleep(1);
 
     my_tuple[0].is_actual = TS_NO;
     my_tuple[1].is_actual = TS_NO;
-    my_tuple[0].data.int_field = -128;
-    my_tuple[1].data.float_field = -3.14;
 
-
-    printf("starting \"in\" operation\n");
+    printf("starting \"inp\" operation\n");
     cmd_result = ts_inp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
     if (cmd_result == TS_FAILURE){
+        printf("an error encourted");
         return -1;
     }
-    nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
-    pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
+    else if (cmd_result == TS_NO_TUPLE){
+        printf("no tuple matched your tuple template\n");
+    }
+    else if (cmd_result == TS_SUCCESS){
+        printf("received correct tuple\n");
+        nice_power = my_tuple[0].data.int_field;    /* 128 from the tuple spacespace*/
+        pi = my_tuple[1].data.float_field;          /* 3.14 from the tuple spacespace*/
 
-    printf("gotten \n\tnice_power: %6d", nice_power);
-    printf("\n\tpi: %14f\n\n", pi);
+        printf("gotten \n\tnice_power: %6d", nice_power);
+        printf("\n\tpi: %14f\n\n", pi);
+    }
     
     return 0;
 }

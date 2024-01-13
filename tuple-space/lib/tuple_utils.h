@@ -21,7 +21,7 @@ typedef struct
 
 } tuple_ask;
 
-extern int stats[6];
+extern int stats[8];
 extern tuple_struct tuples[MAX_TUPLES], empty_tuple;
 extern tuple_ask tuple_asks[MAX_TUPLES], empty_ask;
 
