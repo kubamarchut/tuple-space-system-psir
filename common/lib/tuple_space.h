@@ -20,6 +20,8 @@
 #define TS_ASK  0
 #define TS_ACK  1
 
+#define MAX_TS_OUT 2
+
 typedef struct {
     int is_actual;  /* does the data member contains data */
     int type;       /* what is the type of the data member */

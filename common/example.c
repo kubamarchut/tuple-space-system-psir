@@ -27,7 +27,14 @@ int main(void)
     my_tuple[1].data.float_field = 3.14;
 
     /* add a tuple to the tuple space */
-    ts_out("nice_constants", my_tuple, 2);      /* ("nice_constants",128,3.14) */
+    int out_result = ts_out("nice_constants", my_tuple, 2);      /* ("nice_constants",128,3.14) */
+    if (out_result == TS_FAILURE){
+        printf("an error encourted\n");
+        return -1;
+    }
+    else if (out_result == TS_SUCCESS){
+        printf("sent tuple\n");
+    }
     sleep(1);
     printf("\n");
 
@@ -38,7 +45,7 @@ int main(void)
     /* some other process must have produced a tuple matching the template */
     int cmd_result = ts_inp("temperature", my_template, 1);      /* ("temperature",?float) */
     if (cmd_result == TS_FAILURE){
-        printf("an error encourted");
+        printf("an error encourted\n");
         return -1;
     }
     else if (cmd_result == TS_NO_TUPLE){
@@ -80,7 +87,7 @@ int main(void)
     printf("starting \"inp\" operation\n");
     cmd_result = ts_inp("nice_constants", my_tuple, 2);      /* ("nice_constants",?int,?float) */
     if (cmd_result == TS_FAILURE){
-        printf("an error encourted");
+        printf("an error encourted\n");
         return -1;
     }
     else if (cmd_result == TS_NO_TUPLE){

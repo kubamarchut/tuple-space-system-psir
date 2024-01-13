@@ -23,7 +23,7 @@ int main(void)
     
     int cmd_result = ts_in("temperature", my_template, 1);
     if (cmd_result == TS_FAILURE){
-        printf("an error encourted");
+        printf("an error encourted\n");
         return -1;
     }
     else if (cmd_result == TS_NO_TUPLE){
@@ -45,7 +45,7 @@ int main(void)
     printf("starting \"rd\" operation\n");
     cmd_result = ts_rd("nice_constants", my_tuple, 2);
     if (cmd_result == TS_FAILURE){
-        printf("an error encourted");
+        printf("an error encourted\n");
         return -1;
     }
     else if (cmd_result == TS_NO_TUPLE){

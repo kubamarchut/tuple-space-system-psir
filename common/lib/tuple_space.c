@@ -25,21 +25,29 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
     // receive ack
     unsigned char rec_packet[1024];
     memset(rec_packet, 0, sizeof(rec_packet));
+    int total_packet_size_rec = receive_udp_packet_timeout(rec_packet, 1024, 1);
+    int try_counter = 0;
 
-    //int total_packet_size_rec = receive_udp_packet_timeout(rec_packet, 1024, 1);
-    //if (total_packet_size_rec == -1){
-    //    return TS_FAILURE;
-    //}
+    while (try_counter < (MAX_TS_OUT - 1) && total_packet_size_rec == -1)
+    {
+        send_udp_packet(packet, total_packet_size);
+        total_packet_size_rec = receive_udp_packet_timeout(rec_packet, 1024, 1);
+        try_counter++;
+    }
+    
+    if (try_counter >= MAX_TS_OUT){
+        return TS_FAILURE;
+    }
     
     //displayProtocolBytes(rec_packet, total_packet_size_rec, rec_packet[1]);
-    //int command;
-    //unsigned char tuple_name_rec[32];
-    //int num_fields_rec;
-    //total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
+    int command;
+    unsigned char tuple_name_rec[32];
+    int num_fields_rec;
+    total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
     //verify ack
-    //if(command != TS_CMD_OUT || my_strcmp(tuple_name, tuple_name_rec) || num_fields == 0){
-    //    return TS_FAILURE;
-    //}
+    if(command != TS_CMD_OUT || my_strcmp(tuple_name, tuple_name_rec) || num_fields == 0){
+        return TS_FAILURE;
+    }
 
     return TS_SUCCESS;
 }
