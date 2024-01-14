@@ -67,7 +67,7 @@ void loop()
     my_tuple[0].type = TS_INT;
 
     /* add a tuple to the tuple space */
-    int in_result = ts_inp("check_if_prime", my_tuple, 1);
+    int in_result = ts_in("check_if_prime", my_tuple, 1);
     if (in_result == TS_FAILURE){
         printf("an error encourted\n");
     }

@@ -15,20 +15,17 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
     send_udp_packet(packet, total_packet_size);
 
     // receive ack
-    int total_packet_size_rec = -1;
+    int total_packet_size_rec = receive_udp_packet_timeout(rec_packet, 100, 1);
+    int try_counter = 0;
 
-    for (int attempt = 0; attempt < 3; ++attempt) {
-        total_packet_size_rec = receive_udp_packet(packet, 1024);
-
-        if (total_packet_size_rec != -1) {
-            // Successful reception, break out of the loop
-            break;
-        }
-        delay(100);
+    while (try_counter < (MAX_TS_OUT - 1) && total_packet_size_rec == -1)
+    {
+        send_udp_packet(packet, total_packet_size);
+        total_packet_size_rec = receive_udp_packet_timeout(rec_packet, 1024, 1);
+        try_counter++;
     }
-
-    if (total_packet_size_rec == -1) {
-        // All attempts failed
+    
+    if (try_counter >= MAX_TS_OUT){
         return TS_FAILURE;
     }
     
@@ -38,7 +35,8 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
     int num_fields_rec;
     total_packet_size_rec = deserializePacket(rec_packet, &command, tuple_name_rec, fields, &num_fields_rec);
     //verify ack
-    if(command != TS_CMD_OUT || my_strcmp(tuple_name, tuple_name_rec) == 0){
+    if(command != TS_CMD_OUT){
+        printf("test\n");
         return TS_FAILURE;
     }
 
@@ -47,7 +45,7 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
 
 /* Implementation of ts_inp function */
 int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
-    unsigned char packet[1024];
+    unsigned char packet[100];
     memset(packet, 0, sizeof(packet));
 
     int total_packet_size = serializePacket(packet, TS_CMD_IN_P, tuple_name, fields, num_fields);
@@ -59,17 +57,7 @@ int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
     //unsigned char rec_packet[1024];
     memset(packet, 0, sizeof(packet));
 
-    int total_packet_size_rec = -1;
-
-    for (int attempt = 0; attempt < 3; ++attempt) {
-        total_packet_size_rec = receive_udp_packet(packet, 1024);
-
-        if (total_packet_size_rec != -1) {
-            // Successful reception, break out of the loop
-            break;
-        }
-        delay(100);
-    }
+    int total_packet_size_rec = receive_udp_packet_timeout(packet, 100, 1);
 
     if (total_packet_size_rec == -1) {
         // All attempts failed
@@ -88,7 +76,7 @@ int ts_inp(char* tuple_name, field_t* fields, int num_fields) {
 
 /* Implementation of ts_rdp function */
 int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
-    unsigned char packet[1024];
+    unsigned char packet[100];
     memset(packet, 0, sizeof(packet));
 
     int total_packet_size = serializePacket(packet, TS_CMD_RD_P, tuple_name, fields, num_fields);
@@ -100,17 +88,7 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
     memset(packet, 0, sizeof(packet));
 
     // receive ack
-    int total_packet_size_rec = -1;
-
-    for (int attempt = 0; attempt < 3; ++attempt) {
-        total_packet_size_rec = receive_udp_packet(packet, 1024);
-
-        if (total_packet_size_rec != -1) {
-            // Successful reception, break out of the loop
-            break;
-        }
-        delay(100);
-    }
+    int total_packet_size_rec = receive_udp_packet_timeout(packet, 100, 1);
 
     if (total_packet_size_rec == -1) {
         // All attempts failed
@@ -131,7 +109,7 @@ int ts_rdp(char* tuple_name, field_t* fields, int num_fields) {
 
 /* Implementation of ts_in function */
 int ts_in(char* tuple_name, field_t* fields, int num_fields) {
-    unsigned char packet[1024];
+    unsigned char packet[100];
     memset(packet, 0, sizeof(packet));
 
     int total_packet_size = serializePacket(packet, TS_CMD_IN, tuple_name, fields, num_fields);
@@ -143,17 +121,7 @@ int ts_in(char* tuple_name, field_t* fields, int num_fields) {
     memset(packet, 0, sizeof(packet));
 
     // receive ack
-    int total_packet_size_rec = -1;
-
-    for (int attempt = 0; attempt < 3; ++attempt) {
-        total_packet_size_rec = receive_udp_packet(packet, 1024);
-
-        if (total_packet_size_rec != -1) {
-            // Successful reception, break out of the loop
-            break;
-        }
-        delay(100);
-    }
+    int total_packet_size_rec = receive_udp_packet_timeout(packet, 100, 60*60);
 
     if (total_packet_size_rec == -1) {
         // All attempts failed
@@ -172,7 +140,7 @@ int ts_in(char* tuple_name, field_t* fields, int num_fields) {
 
 /* Implementation of ts_rdp function */
 int ts_rd(char* tuple_name, field_t* fields, int num_fields) {
-    unsigned char packet[1024];
+    unsigned char packet[100];
     memset(packet, 0, sizeof(packet));
 
     int total_packet_size = serializePacket(packet, TS_CMD_RD, tuple_name, fields, num_fields);
@@ -184,17 +152,7 @@ int ts_rd(char* tuple_name, field_t* fields, int num_fields) {
     memset(packet, 0, sizeof(packet));
     
     // receive ack
-    int total_packet_size_rec = -1;
-
-    for (int attempt = 0; attempt < 3; ++attempt) {
-        total_packet_size_rec = receive_udp_packet(packet, 1024);
-
-        if (total_packet_size_rec != -1) {
-            // Successful reception, break out of the loop
-            break;
-        }
-        delay(100);
-    }
+    int total_packet_size_rec = receive_udp_packet_timeout(packet, 100, 60*60);
 
     if (total_packet_size_rec == -1) {
         // All attempts failed
