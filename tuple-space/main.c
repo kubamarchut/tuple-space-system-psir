@@ -62,6 +62,7 @@ int main(){
                 int num_fields;
                 field_t tuple_fields[16];
 
+
                 int total_packet_size = deserializePacket(received_message,
                                                         &command_type, tuple_name,
                                                         tuple_fields,

@@ -1,0 +1,62 @@
+#Opis zasobow
++ qHumidity,quantity,Z5    # input 0=-10 1023=+20
++ sOpening,status,D13      # input 0=OPEN, 1=CLOSED
++ sFan,action,D2           # output 0=ON, 1=OFF
+
+#test nr.1
+:  7500000, sOpening, 0
+:  7500000, qHumidity, 0
+: 10000000, qHumidity, 5
+: 15000000, qHumidity, 340
+: 20000000, qHumidity, 340
+: 22500000, qHumidity, 340
+: 25000000, qHumidity, 450
+: 30000000, qHumidity, 247
+: 35000000, qHumidity, 265
+: 40000000, qHumidity, 490
+: 45000000, qHumidity, 371
+: 50000000, qHumidity, 640
+: 55000000, qHumidity, 512
+: 60000000, qHumidity, 485
+: 65000000, qHumidity, 426
+: 70000000, qHumidity, 604
+: 75000000, qHumidity, 304
+: 80000000, qHumidity, 417
+: 85000000, qHumidity, 616
+: 90000000, qHumidity, 802
+: 95000000, qHumidity, 804
+: 100000000, qHumidity, 950
+: 105000000, qHumidity, 937
+: 110000000, qHumidity, 754
+: 115000000, qHumidity, 579
+: 120000000, qHumidity, 442
+: 125000000, qHumidity, 494
+: 130000000, qHumidity, 404
+: 135000000, qHumidity, 491
+: 140000000, qHumidity, 455
+: 145000000, qHumidity, 495
+: 150000000, qHumidity, 547
+: 155000000, qHumidity, 715
+: 160000000, qHumidity, 975
+: 165000000, qHumidity, 838
+: 170000000, qHumidity, 662
+: 175000000, qHumidity, 722
+: 180000000, qHumidity, 615
+: 185000000, qHumidity, 778
+: 190000000, qHumidity, 816
+: 195000000, qHumidity, 848
+: 200000000, qHumidity, 712
+: 205000000, qHumidity, 659
+: 210000000, qHumidity, 661
+: 215000000, qHumidity, 594
+: 220000000, qHumidity, 833
+: 225000000, qHumidity, 647
+: 230000000, qHumidity, 498
+: 235000000, qHumidity, 506
+: 240000000, qHumidity, 788
+: 245000000, qHumidity, 841
+: 250000000, qHumidity, 694
+: 255000000, qHumidity, 657
+: 260000000, qHumidity, 651
+: 265000000, qHumidity, 543
+: 270000000, qHumidity, 411

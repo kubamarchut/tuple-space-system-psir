@@ -190,7 +190,6 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
     }
     tuple_name[tuple_name_length] = '\0'; // Null-terminate the string
 
-
     // Reconstruct command and num_fields from flags_combined
     *command = packet[0] >> COMMAND_TYPE_POS & COMMAND_TYPE_MASK;
     *num_fields = (packet[0] & 0x0f) + 1;
@@ -222,11 +221,10 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
                                                             packet[total_packet_size++]);
             }
             else if(fields[i].type == TS_STR) {
-                // Assuming sizeof(float) is 4 bytes
                 for (int j = 0; j < field_len; j++)
                 {
                     fields[i].data.string_field[j] = packet[total_packet_size++];
-                    printf("field str: %02X\n", fields[i].data.string_field[j]);
+                    //printf("field str: %02X\n", fields[i].data.string_field[j]);
                 }
             }
         }
@@ -234,6 +232,8 @@ int deserializePacket(char* packet, int* command, char* tuple_name, field_t* fie
 
     int checksum = genChecksum(packet, total_packet_size, 3);
     if (extracted_checksum != checksum){
+        printf("%d - %d\n", checksum, extracted_checksum);
+        printf("%02X\n", packet[1]);
         return -1; // bit flip detection
     }
     return total_packet_size;
