@@ -9,7 +9,7 @@ int ts_out(char* tuple_name, field_t* fields, int num_fields) {
 
     int total_packet_size = serializePacket(packet, TS_CMD_OUT, tuple_name, fields, num_fields);
 
-    displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
+    //displayProtocolBytes(packet, total_packet_size, strlen(tuple_name));
     
     
     send_udp_packet(packet, total_packet_size);

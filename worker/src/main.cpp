@@ -67,7 +67,7 @@ void loop()
     my_tuple[0].type = TS_INT;
 
     /* add a tuple to the tuple space */
-    int in_result = ts_inp("check_prime", my_tuple, 1);
+    int in_result = ts_inp("check_if_prime", my_tuple, 1);
     if (in_result == TS_FAILURE){
         printf("an error encourted\n");
     }
@@ -75,21 +75,27 @@ void loop()
       printf("nothing to check\n");
     }
     else if (in_result == TS_SUCCESS){
+      int out_result;
       uint32_t test =  my_tuple[0].data.int_field;
       printf("checking int %d", test);
-      field_t tuple_result[2];
+      field_t tuple_result[1];
       tuple_result[0].is_actual = TS_YES;
       tuple_result[0].type = TS_INT;
       tuple_result[0].data.int_field = test;
-      tuple_result[1].is_actual = TS_YES;
-      tuple_result[1].type = TS_INT;
-      tuple_result[1].data.int_field = isPrime(test);
-      ts_out("check_prime_result", tuple_result, 2);
-
-      if (isPrime(test) == 1)
+      if (isPrime(test) == 1){
+        out_result = ts_out("is_prime", tuple_result, 1);
+        if (out_result == TS_FAILURE){
+          printf("an error encourted\n");
+        }
         printf(" it is a prime\n");
-      else
+      }
+      else{
+        out_result = ts_out("is_not_prime", tuple_result, 1);
+        if (out_result == TS_FAILURE){
+          printf("an error encourted\n");
+        }
         printf(" it is not a prime\n");
+      }
     }
 
     if (i >= MAX){i = 0;}

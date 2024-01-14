@@ -61,7 +61,6 @@ int main(){
                 unsigned char tuple_name[32];
                 int num_fields;
                 field_t tuple_fields[16];
-                displayProtocolBytes(received_message, pos, 0);
 
 
                 int total_packet_size = deserializePacket(received_message,

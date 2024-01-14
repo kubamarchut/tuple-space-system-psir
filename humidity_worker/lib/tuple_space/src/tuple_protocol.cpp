@@ -60,7 +60,7 @@ uint32_t bytesToInt(unsigned char byte1, unsigned char byte2, unsigned char byte
 int floatToBytes(float number, int index){
     unsigned char* floatBytes = (unsigned char*)&number;
 
-    printf("%d \n", sizeof(float) - index - 1);
+    //printf("%d \n", sizeof(float) - index - 1);
     return floatBytes[sizeof(float) - index - 1];
 }
 
@@ -222,7 +222,7 @@ int deserializePacket(char* packet, int* command, unsigned char* tuple_name, fie
                 for (int j = 0; j < field_len; j++)
                 {
                     fields[i].data.string_field[j] = packet[total_packet_size++];
-                    printf("field str: %02X\n", fields[i].data.string_field[j]);
+                    //printf("field str: %02X\n", fields[i].data.string_field[j]);
                 }
             }
         }

@@ -22,11 +22,13 @@ const long interval = 1000; // Interval in milliseconds (1 second)
 const long interval_alarm = 10000;
 unsigned long previous_alarm = 0;
 bool alarm_on = false;
+bool fan_on = false;
 
 void setup()
 {
   fdev_setup_stream(&f_out, sput, nullptr, _FDEV_SETUP_WRITE);
   ZsutPinMode(FAN, OUTPUT);
+  ZsutDigitalWrite(FAN, HIGH);
   stdout = &f_out;
   Serial.begin(115200);
   Serial.print(F("Manager init... ["));
@@ -55,25 +57,35 @@ void loop()
 
   if (currentMillis - previous_alarm >= interval_alarm && alarm_on)
   {
-    field_t tuple_result[2];
-    tuple_result[0].is_actual = TS_NO;
-    tuple_result[0].type = TS_FLOAT;
-    tuple_result[1].is_actual = TS_NO;
-    tuple_result[1].type = TS_INT;
+    long test = ZsutAnalog5Read();
+    if (test != NULL)
+    {
+      float humidity_read = mapfloat(test, 0, 1023, 0, 100);
+      if (humidity(humidity_read, alarm_on) == 0){
+        field_t tuple_result[2];
+        tuple_result[0].is_actual = TS_NO;
+        tuple_result[0].type = TS_FLOAT;
+        tuple_result[1].is_actual = TS_NO;
+        tuple_result[1].type = TS_INT;
 
-    printf("Alarm off\n");
+        printf("Alarm off\n");
 
-    alarm_on = false;
+        alarm_on = false;
 
-    int in_result = ts_inp("alarm_status", tuple_result, 2);
-     if (in_result == TS_FAILURE){
-        printf("an error encourted\n");
-    }
-    else if (in_result == TS_NO_TUPLE){
-        //printf("no tuple matched your tuple template\n");
-    }
-    else if (in_result == TS_SUCCESS){
-      //no idea
+        int in_result = ts_inp("alarm_status", tuple_result, 2);
+        if (in_result == TS_FAILURE){
+            printf("an error encourted\n");
+        }
+        else if (in_result == TS_NO_TUPLE){
+            printf("somebody already removed alarm\n");
+        }
+        else if (in_result == TS_SUCCESS){
+          //no idea
+        }
+      }
+      else{
+        previous_alarm = ZsutMillis();
+      }
     }
   }
 
@@ -92,19 +104,24 @@ void loop()
       printf("an error encourted\n");
     }
     else if (rd_result == TS_NO_TUPLE){
-      printf("Turning off the fan\n");
-      ZsutDigitalWrite(FAN, LOW);
+      if (fan_on){
+        printf("Turning off the fan\n");
+        ZsutDigitalWrite(FAN, HIGH);
+        fan_on = false;
+      }
     }
     else if (rd_result == TS_SUCCESS){
-      printf("Turning on the fan\n");
-      ZsutDigitalWrite(FAN, HIGH);
+      if(!fan_on){
+        printf("Turning on the fan\n");
+        ZsutDigitalWrite(FAN, LOW);
+        fan_on = true;
+      }
     }
 
     long test = ZsutAnalog5Read();
     if (test != NULL)
     {
       float humidity_read = mapfloat(test, 0, 1023, 0, 100);
-      printf("test %d\n", test);
       printf("humidity is ");
       Serial.print(humidity_read);
       printf("%%\n");
@@ -114,11 +131,11 @@ void loop()
       tuple_result[0].data.float_field = humidity_read;
       tuple_result[1].is_actual = TS_YES;
       tuple_result[1].type = TS_INT;
-      tuple_result[1].data.int_field = humidity(humidity_read);
+      tuple_result[1].data.int_field = humidity(humidity_read, alarm_on);
 
-      if (tuple_result[1].data.int_field == 0)
-        printf(" All good\n");
-      else if (humidity(humidity_read) == 1 && !alarm_on)
+      //if (tuple_result[1].data.int_field == 0)
+        //printf(" All good\n");
+      if (humidity(humidity_read, alarm_on) == 1 && !alarm_on)
       {
         int out_result = ts_out("alarm_status", tuple_result, 2);
         if (out_result == TS_FAILURE){

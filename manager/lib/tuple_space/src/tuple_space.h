@@ -1,6 +1,8 @@
 #ifndef TUPLE_SPACE_H
 #define TUPLE_SPACE_H
 
+#include <stdint.h>
+
 #define TS_YES      1
 #define TS_NO       0
 #define TS_INT      0
@@ -26,7 +28,7 @@ typedef struct {
     int is_actual;  /* does the data member contains data */
     int type;       /* what is the type of the data member */
     union {
-        int int_field;
+        uint32_t int_field;
         float float_field;
         unsigned char string_field[32];
     } data;

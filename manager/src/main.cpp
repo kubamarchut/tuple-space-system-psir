@@ -62,13 +62,11 @@ void loop()
 {
   unsigned long currentMillis = ZsutMillis();
   if (currentMillis - previousMillis_2 >= interval_2 && checked_ints < MAX-1) {
-    field_t tuple_result[2];
+    field_t tuple_result[1];
     tuple_result[0].is_actual = TS_NO;
     tuple_result[0].type = TS_INT;
-    tuple_result[1].is_actual = TS_NO;
-    tuple_result[1].type = TS_INT;
-    const char* tuple_name = "check_prime_result";
-    int in_result = ts_inp(tuple_name, tuple_result, 2);
+    unsigned char* tuple_name = "is_prime";
+    int in_result = ts_inp(tuple_name, tuple_result, 1);
     if (in_result == TS_FAILURE){
         printf("an error encourted\n");
     }
@@ -79,13 +77,21 @@ void loop()
       checked_ints++;
       uint32_t test =  tuple_result[0].data.int_field;
 
-      printf("received result for int %ld", test);
-      if (tuple_result[1].data.int_field == 1){
-        printf(" is prime\n");
-      }
-      else{
-        printf(" is not prime\n");
-      }
+      printf("received result for int %ld is prime\n", test);
+    }
+    tuple_name = "is_not_prime";
+    in_result = ts_inp(tuple_name, tuple_result, 1);
+    if (in_result == TS_FAILURE){
+        printf("an error encourted\n");
+    }
+    else if (in_result == TS_NO_TUPLE){
+        //printf("no tuple matched your tuple template\n");
+    }
+    else if (in_result == TS_SUCCESS){
+      checked_ints++;
+      uint32_t test =  tuple_result[0].data.int_field;
+
+      printf("received result for int %ld is not a prime\n", test);
     }
     previousMillis_2 = currentMillis;
   }
@@ -101,7 +107,7 @@ void loop()
 
     //Serial.println("sending new tuple: ");
         /* add a tuple to the tuple space */
-    int out_result = ts_out("check_prime", my_tuple, 1);
+    int out_result = ts_out("check_if_prime", my_tuple, 1);
     if (out_result == TS_FAILURE){
       printf("an error encourted\n");
     }
