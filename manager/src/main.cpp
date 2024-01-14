@@ -18,8 +18,8 @@ int sput(char c, __attribute__((unused)) FILE* f) {return !Serial.write(c);}
 
 unsigned long previousMillis_1 = 0;
 unsigned long previousMillis_2 = 0;
-const long interval_1 = 750; // Interval in milliseconds (1 second)
-const long interval_2 = 250; // Interval in milliseconds (1 second)
+const long interval_1 = 750; // Interval in milliseconds (750 ms)
+const long interval_2 = 250; // Interval in milliseconds (250 ms)
 
 void setup()
 {

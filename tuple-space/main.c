@@ -4,13 +4,9 @@
 #include "../common/lib/tuple_protocol.h"
 #include "./lib/tuple_utils.h"
 
-#include <arpa/inet.h>
-#include <errno.h>
-#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
 
 #define PORT "5000"
 #define MAX_BUFF 1024
