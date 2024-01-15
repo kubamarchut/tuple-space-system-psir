@@ -6,14 +6,14 @@ To repozytorium przechowuje materiały zgromadzone przy pracy na projektem "Tupl
 lista będzie na bierząco uzupełniana
 
 - [x] kod sprawdzający czy liczba jest pierwsza
-- [ ] podstawowa struktura tuple space
+- [x] podstawowa struktura tuple space
 - [x] podstawowa struktura managera
-- [ ] test komunikacji tuple space <-> manager
+- [x] test komunikacji tuple space <-> manager
 - [x] postawowa struktura worker
-- [ ] test komunikacji tuple space <-> 3x worker
-- [ ] opracowanie binarnego protokołu warstwy aplikacyjnej APL
-- [ ] implementacja APL
-- [ ] implementacja serializacji (zamiana wartości przy przesyłaniu i obieraniu)
+- [x] test komunikacji tuple space <-> 3x worker
+- [x] opracowanie binarnego protokołu warstwy aplikacyjnej APL
+- [x] implementacja APL
+- [x] implementacja serializacji (zamiana wartości przy przesyłaniu i obieraniu)
 
 ## 🧭 Nawigacja
 
