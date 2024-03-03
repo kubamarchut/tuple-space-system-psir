@@ -2,6 +2,17 @@
 
 To repozytorium przechowuje materiały zgromadzone przy pracy na projektem "Tuple space middleware for distributed computing" w ramach przedmiotu PSIR.
 
+## 🖥️ Prezentacja rozwiązania: 
+
+![Działający system z dwoma aplikacjami](full-app12.gif)
+
+Na powyższym zrzucie przedstawiono działanie systemu z dwoma uruchomionymi aplikacjami jednocześnie:
+- APP 1: Rozproszone obliczanie liczb pierwszych
+- APP 2: IoT zdecentralizowany system kontroli wilgotności powietrza
+
+(W lewej części widoczny jest serwer przestrzeni krotek, a w prawej połączenia SSH do emulatorów Arduino, na których uruchomione są aplikacje.)
+
+
 ## 📋 Rzeczy do zrobienia
 lista będzie na bierząco uzupełniana
 
